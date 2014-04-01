@@ -9,13 +9,11 @@ letter [a-zA-Z]
 word {letter}+
 digit [0-9]
 number {digit}+
+string ["abc"]
 
 %%
 
-{white} 	{/* Do nothing */}
-
-{word}		return (WORD);
-{number}	return (NUMBER);
+{white} 	{}
 
 "+"		return (PLUS);
 "-"		return (MINUS);
@@ -31,8 +29,7 @@ number {digit}+
 "=/="		return (DIFFERENT);
 "="		return (EQUAL);
 "<-"		return (RECEIVE);
-"\n" 		return (END);
-
+"\n" 		return (END_LINE);
 
 "inicio"	return (START);
 "fim"		return (END);
@@ -55,5 +52,20 @@ number {digit}+
 "inteiro"	return (INT);
 "real"		return (FLOAT);
 "caractere"	return (CHAR);
-"texto"		return (STRING);
+"texto"		return (STRING_TYPE);
 "booleano"	return (BOOL);
+
+
+{word}		return (WORD);
+{number}	{ 
+			yylval = atof(yytext);
+			return (NUMBER);
+		}
+
+{string}	return (STRING_VALUE);
+
+%%
+
+yywrap () {
+return 0;
+}
