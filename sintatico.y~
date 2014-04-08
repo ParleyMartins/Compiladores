@@ -32,12 +32,8 @@ Line:
 	;
 
 Expression:
-	PRINT {
-		printf("print alone");
-	}
-	| PRINT STRING_VALUE {
-		printf("print");
-	}
+	PRINT { printf("print alone");}
+	| PRINT STRING_VALUE { printf("print"); }
 	;
 
 %%
