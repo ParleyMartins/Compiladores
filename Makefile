@@ -7,4 +7,4 @@ prog: lexico.l sintatico.y
 	gcc -o prog sintatico.c lexico.c -lfl -lm
 
 clean:
-	rm lexico.* sintatico.* prog.exe
+	rm *.c sintatico.h prog

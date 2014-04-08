@@ -1,7 +1,9 @@
 %{
+	#include "global.h"
 	#include "sintatico.h"
 	#include <stdlib.h>
 	#include <stdio.h>
+	#include "string.h"
 %}
 
 white [ \t]+
@@ -9,7 +11,7 @@ letter [a-zA-Z]
 word {letter}+
 digit [0-9]
 number {digit}+
-string ["abc"]
+string [".*"]
 
 %%
 
@@ -30,6 +32,7 @@ string ["abc"]
 "="		return (EQUAL);
 "<-"		return (RECEIVE);
 "\n" 		return (END_LINE);
+"\"" 		return (QUOTES);
 
 "inicio"	return (START);
 "fim"		return (END);
@@ -55,14 +58,17 @@ string ["abc"]
 "texto"		return (STRING_TYPE);
 "booleano"	return (BOOL);
 
-
-{word}		return (WORD);
-{number}	{ 
-			yylval = atof(yytext);
-			return (NUMBER);
+{word}		{
+			yylval = (char*) malloc( sizeof(char) ); 
+			strcpy(yylval, yytext);
+			return (WORD);
 		}
 
-{string}	return (STRING_VALUE);
+{number}	{ 
+			yylval = (char*) malloc( sizeof(char) ); 
+			strcpy(yylval, yytext);
+			return (NUMBER);
+		}	
 
 %%
 

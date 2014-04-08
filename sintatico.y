@@ -14,6 +14,7 @@
 %token INT FLOAT CHAR STRING_TYPE BOOL
 %token WORD NUMBER STRING_VALUE
 %token END_FOR END_WHILE END_FUNCTION
+%token QUOTES
 
 %start Input
 
@@ -26,19 +27,26 @@ Input:
 
 Line:
 	END_LINE
-	| Expression END_LINE { 
+	| Expression { 
 		printf("\n");
 	}
 	;
 
 Expression:
-	PRINT {
+	PRINT QUOTES WORD QUOTES {
+		printf("print \"%s\"", $3);
+	}
+	| PRINT {
 		printf("print alone");
 	}
-	| PRINT STRING_VALUE {
-		printf("print");
+	| QUOTES WORD QUOTES {
+		printf("string");	
+	}
+	| NUMBER {
+		printf("Numero: %f", (float) $1);	
 	}
 	;
+
 
 %%
 
