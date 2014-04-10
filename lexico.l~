@@ -10,7 +10,7 @@ white [ \t]+
 letter [a-zA-Z]
 digit [0-9]
 number {digit}+
-string [a-zA-Z0-9 ]+
+string [a-zA-Z0-9!@#$&\*()-_+=/;:.>,<{} ]+
 identifier {letter}(_|{letter}|{digit})*
 
 %%
