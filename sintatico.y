@@ -16,7 +16,7 @@
 %token INT FLOAT CHAR STRING_TYPE BOOL
 %token IDENTIFIER NUMBER STRING_VALUE
 %token END_FOR END_WHILE END_FUNCTION
-%token QUOTES
+%token QUOTES WORD
 
 %start Input
 
@@ -32,35 +32,41 @@ Line:
 	| Expression { 
 		printf("\n");
 	}
+	| IfExpression
 	;
 
 Expression:
-	QUOTES STRING_VALUE QUOTES {
-		printf("string REGRA nova: \n %s", $2);	
-	}
-	| NUMBER {
-		printf("Numero: %f", atof($1));	
-	}
-	| IfExpression{
-		printf("If: ");
-	}
-	| OPEN_PARENTHESIS {
-		printf("teste ");
+	PRINT QUOTES WordExpression QUOTES{
+		printf("codigo em python:\n");
+		printf("\tprint %s", $3);	
 	}
 	;
 
 
+WordExpression:
+	STRING_VALUE{
+		$$ = $1;
+	}
+	| WORD{
+		$$ = $1;
+	}
+	|IDENTIFIER{
+		$$ = $1;
+	}
+	;
+
 IfExpression:
-	IF OPEN_PARENTHESIS BoolExpression CLOSE_PARENTHESIS{
+	IF OPEN_PARENTHESIS {
 		printf("codigo em python:\n");
 		printf("\tif ");
 	}
+	| BoolExpression CLOSE_PARENTHESIS
 	;
 
 BoolExpression:
 	/*Empty Line*/
 	| IDENTIFIER LogicalComparer IDENTIFIER BoolExpression{
-		printf("%s %s %s", $1, $2, $3);
+		printf("%s %s %s \n", $1, $2, $3);
 	}
 	| BinaryOperator BoolExpression{
 		printf(" %s ", $1);

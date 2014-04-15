@@ -8,6 +8,7 @@
 
 white [ \t]+
 letter [a-zA-Z]
+word [a-zA-Z0-9]+
 digit [0-9]
 number {digit}+
 string [a-zA-Z0-9 ]+
@@ -15,7 +16,12 @@ identifier {letter}(_|{letter}|{digit})*
 
 %%
 
+
 {white} 	{}
+
+
+"escreva "	return (PRINT);
+"leia "		return (SCAN);
 
 "+"		return (PLUS);
 "-"		return (MINUS);
@@ -34,33 +40,31 @@ identifier {letter}(_|{letter}|{digit})*
 "\n" 		return (END_LINE);
 "\"" 		return (QUOTES);
 
-"e"   		return(AND); 
-"ou"   		return(OR);
-"nao" 		return(NOT);
+" e "   		return(AND); 
+" ou "   		return(OR);
+" nao " 		return(NOT);
 
 "inicio"	return (START);
 "fim"		return (END);
 
-"se"		return (IF);
-"para"		return (FOR);
-"entao"		return (THEN);
-"senao"		return (ELSE);
-"funcao"	return (FUNCTION);
-"enquanto"	return (WHILE);
+"se "		return (IF);
+"para "		return (FOR);
+"entao "		return (THEN);
+"senao "		return (ELSE);
+"funcao "	return (FUNCTION);
+"enquanto "	return (WHILE);
 
 "fim_se"	return (END_FOR);
 "fim_para"	return (END_FOR);
 "fim_enquanto"	return (END_WHILE);
 "fim_funcao"	return (END_FUNCTION);
 
-"escreva"	return (PRINT);
-"leia"		return (SCAN);
+"inteiro "	return (INT);
+"real "		return (FLOAT);
+"caractere "	return (CHAR);
+"texto "		return (STRING_TYPE);
+"booleano "	return (BOOL);
 
-"inteiro"	return (INT);
-"real"		return (FLOAT);
-"caractere"	return (CHAR);
-"texto"		return (STRING_TYPE);
-"booleano"	return (BOOL);
 
 
 {identifier}	{
@@ -68,12 +72,19 @@ identifier {letter}(_|{letter}|{digit})*
 			strcpy(yylval, yytext);
 			return (IDENTIFIER);
 		}
+		
 
 {number}	{ 
 			yylval = (char*) malloc( sizeof(char) ); 
 			strcpy(yylval, yytext);
 			return (NUMBER);
 		}	
+
+{word} { 
+			yylval = (char*) malloc( sizeof(char) ); 
+			strcpy(yylval, yytext);
+			return (WORD);
+		}
 
 {string}	{ 
 			yylval = (char*) malloc( sizeof(char) ); 
