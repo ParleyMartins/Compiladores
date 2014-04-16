@@ -5,18 +5,58 @@
 	#include <string.h>
 %}
 
-%token PLUS MINUS TIMES DIVIDE POWER
-%token LESS_THAN GREATER_THAN LESS_OR_EQUAL GREATER_OR_EQUAL 
-%token OPEN_PARENTHESIS CLOSE_PARENTHESIS
-%token DIFFERENT EQUAL RECEIVE 
-%token AND OR NOT
-%token END_LINE START END
-%token IF THEN ELSE FOR WHILE FUNCTION
-%token PRINT SCAN
-%token INT FLOAT CHAR STRING_TYPE BOOL
-%token IDENTIFIER NUMBER STRING_VALUE
-%token END_FOR END_WHILE END_FUNCTION
-%token QUOTES WORD
+%token PLUS
+%token MINUS
+%token TIMES
+%token DIVIDE
+%token POWER
+
+%token LESS_THAN
+%token GREATER_THAN
+%token LESS_OR_EQUAL
+%token GREATER_OR_EQUAL 
+
+%token OPEN_PARENTHESIS
+%token CLOSE_PARENTHESIS
+
+%token DIFFERENT
+%token EQUAL
+%token RECEIVE 
+
+%token AND
+%token OR
+%token NOT
+
+%token END_LINE
+%token START
+%token END
+
+%token IF
+%token THEN
+%token ELSE
+%token FOR
+%token WHILE
+%token FUNCTION
+
+%token PRINT
+%token SCAN
+
+%token INT
+%token FLOAT
+%token CHAR
+%token STRING_TYPE
+%token BOOL
+
+%token IDENTIFIER
+%token NUMBER
+%token STRING_VALUE
+
+%token END_FOR
+%token END_WHILE
+%token END_FUNCTION
+
+%token QUOTES
+%token WORD
 
 %start Input
 
@@ -36,7 +76,7 @@ Line:
 	;
 
 Expression:
-	PRINT QUOTES WordExpression QUOTES{
+	PRINT QUOTES WordExpression QUOTES {
 		printf("codigo em python:\n");
 		printf("\tprint %s", $3);	
 	}
@@ -44,13 +84,13 @@ Expression:
 
 
 WordExpression:
-	STRING_VALUE{
+	STRING_VALUE {
 		$$ = $1;
 	}
-	| WORD{
+	| WORD {
 		$$ = $1;
 	}
-	|IDENTIFIER{
+	|IDENTIFIER {
 		$$ = $1;
 	}
 	;
@@ -65,10 +105,10 @@ IfExpression:
 
 BoolExpression:
 	/*Empty Line*/
-	| IDENTIFIER LogicalComparer IDENTIFIER BoolExpression{
+	| IDENTIFIER LogicalComparer IDENTIFIER BoolExpression {
 		printf("%s %s %s \n", $1, $2, $3);
 	}
-	| BinaryOperator BoolExpression{
+	| BinaryOperator BoolExpression {
 		printf(" %s ", $1);
 	}
 	;
@@ -109,7 +149,7 @@ int yyerror(char *s) {
 	printf("%s\n",s);
 }
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
 	yyparse();
 }
 

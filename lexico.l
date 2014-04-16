@@ -40,17 +40,17 @@ identifier {letter}(_|{letter}|{digit})*
 "\n" 		return (END_LINE);
 "\"" 		return (QUOTES);
 
-" e "   		return(AND); 
-" ou "   		return(OR);
-" nao " 		return(NOT);
+" e "   	return(AND); 
+" ou "   	return(OR);
+" nao " 	return(NOT);
 
 "inicio"	return (START);
 "fim"		return (END);
 
 "se "		return (IF);
 "para "		return (FOR);
-"entao "		return (THEN);
-"senao "		return (ELSE);
+"entao "	return (THEN);
+"senao "	return (ELSE);
 "funcao "	return (FUNCTION);
 "enquanto "	return (WHILE);
 
@@ -62,7 +62,7 @@ identifier {letter}(_|{letter}|{digit})*
 "inteiro "	return (INT);
 "real "		return (FLOAT);
 "caractere "	return (CHAR);
-"texto "		return (STRING_TYPE);
+"texto "	return (STRING_TYPE);
 "booleano "	return (BOOL);
 
 
@@ -80,7 +80,7 @@ identifier {letter}(_|{letter}|{digit})*
 			return (NUMBER);
 		}	
 
-{word} { 
+{word} 		{ 
 			yylval = (char*) malloc( sizeof(char) ); 
 			strcpy(yylval, yytext);
 			return (WORD);

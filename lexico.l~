@@ -11,8 +11,8 @@ letter [a-zA-Z]
 word [a-zA-Z0-9]+
 digit [0-9]
 number {digit}+
-identifier {letter}(_|{letter}|{digit})*
 string [a-zA-Z0-9 ]+
+identifier {letter}(_|{letter}|{digit})*
 
 %%
 
@@ -40,17 +40,17 @@ string [a-zA-Z0-9 ]+
 "\n" 		return (END_LINE);
 "\"" 		return (QUOTES);
 
-" e "   		return(AND); 
-" ou "   		return(OR);
-" nao " 		return(NOT);
+" e "   	return(AND); 
+" ou "   	return(OR);
+" nao " 	return(NOT);
 
 "inicio"	return (START);
 "fim"		return (END);
 
 "se "		return (IF);
 "para "		return (FOR);
-"entao "		return (THEN);
-"senao "		return (ELSE);
+"entao "	return (THEN);
+"senao "	return (ELSE);
 "funcao "	return (FUNCTION);
 "enquanto "	return (WHILE);
 
@@ -62,7 +62,7 @@ string [a-zA-Z0-9 ]+
 "inteiro "	return (INT);
 "real "		return (FLOAT);
 "caractere "	return (CHAR);
-"texto "		return (STRING_TYPE);
+"texto "	return (STRING_TYPE);
 "booleano "	return (BOOL);
 
 
