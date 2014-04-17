@@ -77,7 +77,7 @@ Line:
 Expression:
 	PRINT QUOTES WordExpression QUOTES {
 		printf("codigo em python:\n");
-		printf("\tprint %s", $3);	
+		printf("\tprint \"%s\"", $3);	
 	}
 	;
 
