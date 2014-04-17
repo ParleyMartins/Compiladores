@@ -56,7 +56,6 @@
 %token END_FUNCTION
 
 %token QUOTES
-%token WORD
 
 %start Input
 
@@ -87,7 +86,7 @@ WordExpression:
 	STRING_VALUE {
 		$$ = $1;
 	}
-	| WORD {
+	| NUMBER {
 		$$ = $1;
 	}
 	|IDENTIFIER {

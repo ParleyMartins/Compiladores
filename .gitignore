@@ -3,3 +3,5 @@ sintatico.c
 lexico.c
 prog
 saida
+*.l~
+*.y~
