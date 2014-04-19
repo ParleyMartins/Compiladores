@@ -69,16 +69,18 @@ Input:
 
 Line:
 	END_LINE
-	| Expression { 
+	| Print { 
 		printf("\n");
 	}
-	| IfExpression
+	| IfExpression { 
+		printf("\n");
+	}
 	;
 
-Expression:
+Print:
 	PRINT QUOTES WordExpression QUOTES {
-		printf("codigo em python:\n");
-		printf("\tprint %s", $3);	
+		printf("codigo em python\n");
+		printf("\tprint '%s'", $3);	
 	}
 	;
 
@@ -90,28 +92,53 @@ WordExpression:
 	| WORD {
 		$$ = $1;
 	}
-	|IDENTIFIER {
+	| IDENTIFIER {
 		$$ = $1;
 	}
 	;
 
 IfExpression:
-	IF OPEN_PARENTHESIS {
-		printf("codigo em python:\n");
-		printf("\tif ");
+	IF BoolComparasion THEN {
+		printf("codigo em python\n");
+		printf("\tif  %s:", $2);
 	}
-	| BoolExpression CLOSE_PARENTHESIS
 	;
 
-BoolExpression:
-	/*Empty Line*/
-	| IDENTIFIER LogicalComparer IDENTIFIER BoolExpression {
-		printf("%s %s %s \n", $1, $2, $3);
+BoolComparasion:
+	 BoolExpression BinaryOperator BoolExpression {
+		char *str2 = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
+		strcpy(str2, $1);
+		strcat(str2, " ");
+		strcat(str2, $2);
+		strcat(str2, " ");
+		strcat(str2, $3);
+		//strcat(str, " ");
+		//strcat(str, $4);
+		$$ = str2;
+		//free(str2);
 	}
-	| BinaryOperator BoolExpression {
-		printf(" %s ", $1);
+	| BoolExpression {
+		$$ = $1;
+	}
+	
+	;
+	
+
+BoolExpression:
+	IDENTIFIER LogicalComparer IDENTIFIER{
+		char *str = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
+		strcpy(str, $1);
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, $3);
+		//strcat(str, " ");
+		//strcat(str, $4);
+		$$ = str;
+		//free(str);
 	}
 	;
+
 
 LogicalComparer:
 	LESS_THAN {

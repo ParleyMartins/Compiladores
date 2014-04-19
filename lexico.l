@@ -23,6 +23,10 @@ identifier {letter}(_|{letter}|{digit})*
 "escreva "	return (PRINT);
 "leia "		return (SCAN);
 
+") e ("   	return(AND); 
+") ou ("   	return(OR);
+" nao " 	return(NOT);
+
 "+"		return (PLUS);
 "-"		return (MINUS);
 "*"		return (TIMES);
@@ -40,16 +44,14 @@ identifier {letter}(_|{letter}|{digit})*
 "\n" 		return (END_LINE);
 "\"" 		return (QUOTES);
 
-" e "   	return(AND); 
-" ou "   	return(OR);
-" nao " 	return(NOT);
+
 
 "inicio"	return (START);
 "fim"		return (END);
 
-"se "		return (IF);
+"se ("		return (IF);
 "para "		return (FOR);
-"entao "	return (THEN);
+") entao"	return (THEN);
 "senao "	return (ELSE);
 "funcao "	return (FUNCTION);
 "enquanto "	return (WHILE);

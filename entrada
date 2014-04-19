@@ -1,0 +1,16 @@
+escreva "teste"
+escreva "teste1"
+escreva "teste 2"
+escreva "teste numero 3"
+escreva "teste123teste"
+
+se (a<b) e (G=/=H) entao
+se (a<b) ou (G=/=H) entao
+se (a<B) entao
+se (a>b) entao
+se (c=d) entao
+se (e<=f) entao
+se (e>=f) entao
+se (G=/=H) entao
+e
+
