@@ -1,3 +1,18 @@
-se (a<b)
-se (a<b e b>c)
+escreva "asda"
+escreva " "
+escreva ""
+escreva "asd teasd f123 123asd 123"
+escreva "123"
+
+se a<b entao
+se a<b e b>c entao
+se a<b ou b>c entao
+se a<b ou b>c e b>=c entao
+senao
+fim_se
+
+enquanto a<=b
+enquanto a=v e x=/=f ou a<=t
+fim_enquanto
+
 fim

@@ -10,7 +10,7 @@ white [ \t]+
 letter [a-zA-Z]
 digit [0-9]
 number {digit}+
-string "\""[a-zA-Z0-9 ]+"\""
+string "\""[a-zA-Z0-9 ]*"\""
 identifier {letter}(_|{letter}|{digit})*
 
 %%
@@ -50,7 +50,7 @@ identifier {letter}(_|{letter}|{digit})*
 "funcao"		return (FUNCTION);
 "enquanto"	return (WHILE);
 
-"fim_se"		return (END_FOR);
+"fim_se"		return (END_IF);
 "fim_para"	return (END_FOR);
 "fim_enquanto"	return (END_WHILE);
 "fim_funcao"	return (END_FUNCTION);

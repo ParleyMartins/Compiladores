@@ -51,6 +51,7 @@
 %token NUMBER
 %token STRING_VALUE
 
+%token END_IF
 %token END_FOR
 %token END_WHILE
 %token END_FUNCTION
@@ -66,30 +67,38 @@ Input:
 
 Line:
 	END_LINE
-	| Expression { 
-	}
-	| IfExpression
+	| Expression
 	| END { 
 		exit(EXIT_SUCCESS); 
 	}
 	;
 
 Expression:
+	PrintExpression
+	| IfExpression
+	| WhileExpression
+	;
+
+PrintExpression:
 	PRINT STRING_VALUE {
 		printf("\tprint %s\n", $2);	
 	}
 	;
 
-
 IfExpression:
 	IF BoolComparasion THEN {
-		printf("codigo em python\n");
-		printf("\tif  %s:", $2);
+		printf("\tif  %s:\n", $2);
+	}
+	| ELSE {
+		printf("\telse:\n");			
+	}
+	| END_IF {
+		// End if. Do nothing.	
 	}
 	;
 
 BoolComparasion:
-	 BoolExpression BinaryOperator BoolExpression {
+	 BoolExpression BinaryOperator BoolComparasion {
 		char *str2 = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
 		strcpy(str2, $1);
 		strcat(str2, " ");
@@ -101,7 +110,6 @@ BoolComparasion:
 	| BoolExpression {
 		$$ = $1;
 	}
-	
 	;
 	
 
@@ -147,6 +155,16 @@ BinaryOperator:
 		$$ = " or ";	
 	}
 	;
+
+WhileExpression:
+	WHILE BoolComparasion {
+		printf("\twhile  %s:\n", $2);
+	}
+	| END_WHILE {
+		// While end, do nothing. 	
+	}
+	;
+	
 
 %%
 
