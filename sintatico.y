@@ -82,28 +82,41 @@ Expression:
 
 
 IfExpression:
-	IF OPEN_PARENTHESIS BoolExpression CLOSE_PARENTHESIS {
-		printf("\tif %s\n", $3);
+	IF BoolComparasion THEN {
+		printf("codigo em python\n");
+		printf("\tif  %s:", $2);
 	}
 	;
 
+BoolComparasion:
+	 BoolExpression BinaryOperator BoolExpression {
+		char *str2 = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
+		strcpy(str2, $1);
+		strcat(str2, " ");
+		strcat(str2, $2);
+		strcat(str2, " ");
+		strcat(str2, $3);
+		$$ = str2;
+	}
+	| BoolExpression {
+		$$ = $1;
+	}
+	
+	;
+	
+
 BoolExpression:
-	/*Empty Line*/ {
-		$$ = "";	
-	}
-	| IDENTIFIER LogicalComparer IDENTIFIER BoolExpression {
-		$$ = $1;
-		strcat($$, " ");
-		strcat($$, $2);
-		strcat($$, " ");
-		strcat($$, $3);
-		strcat($$, $4);
-	}
-	| BinaryOperator BoolExpression {
-		$$ = $1;
-		strcat($$, $2);
+	IDENTIFIER LogicalComparer IDENTIFIER {
+		char *str = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
+		strcpy(str, $1);
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, $3);
+		$$ = str;
 	}
 	;
+
 
 LogicalComparer:
 	LESS_THAN {

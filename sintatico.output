@@ -1,0 +1,343 @@
+Terminals unused in grammar
+
+   PLUS
+   MINUS
+   TIMES
+   DIVIDE
+   POWER
+   OPEN_PARENTHESIS
+   CLOSE_PARENTHESIS
+   RECEIVE
+   NOT
+   START
+   ELSE
+   FOR
+   WHILE
+   FUNCTION
+   SCAN
+   INT
+   FLOAT
+   CHAR
+   STRING_TYPE
+   BOOL
+   NUMBER
+   END_FOR
+   END_WHILE
+   END_FUNCTION
+
+
+Grammar
+
+    0 $accept: Input $end
+
+    1 Input: /* empty */
+    2      | Input Line
+
+    3 Line: END_LINE
+    4     | Expression
+    5     | IfExpression
+    6     | END
+
+    7 Expression: PRINT STRING_VALUE
+
+    8 IfExpression: IF BoolComparasion THEN
+
+    9 BoolComparasion: BoolExpression BinaryOperator BoolExpression
+   10                | BoolExpression
+
+   11 BoolExpression: IDENTIFIER LogicalComparer IDENTIFIER
+
+   12 LogicalComparer: LESS_THAN
+   13                | GREATER_THAN
+   14                | LESS_OR_EQUAL
+   15                | GREATER_OR_EQUAL
+   16                | DIFFERENT
+   17                | EQUAL
+
+   18 BinaryOperator: AND
+   19               | OR
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+PLUS (258)
+MINUS (259)
+TIMES (260)
+DIVIDE (261)
+POWER (262)
+LESS_THAN (263) 12
+GREATER_THAN (264) 13
+LESS_OR_EQUAL (265) 14
+GREATER_OR_EQUAL (266) 15
+OPEN_PARENTHESIS (267)
+CLOSE_PARENTHESIS (268)
+DIFFERENT (269) 16
+EQUAL (270) 17
+RECEIVE (271)
+AND (272) 18
+OR (273) 19
+NOT (274)
+END_LINE (275) 3
+START (276)
+END (277) 6
+IF (278) 8
+THEN (279) 8
+ELSE (280)
+FOR (281)
+WHILE (282)
+FUNCTION (283)
+PRINT (284) 7
+SCAN (285)
+INT (286)
+FLOAT (287)
+CHAR (288)
+STRING_TYPE (289)
+BOOL (290)
+IDENTIFIER (291) 11
+NUMBER (292)
+STRING_VALUE (293) 7
+END_FOR (294)
+END_WHILE (295)
+END_FUNCTION (296)
+
+
+Nonterminals, with rules where they appear
+
+$accept (42)
+    on left: 0
+Input (43)
+    on left: 1 2, on right: 0 2
+Line (44)
+    on left: 3 4 5 6, on right: 2
+Expression (45)
+    on left: 7, on right: 4
+IfExpression (46)
+    on left: 8, on right: 5
+BoolComparasion (47)
+    on left: 9 10, on right: 8
+BoolExpression (48)
+    on left: 11, on right: 9 10
+LogicalComparer (49)
+    on left: 12 13 14 15 16 17, on right: 11
+BinaryOperator (50)
+    on left: 18 19, on right: 9
+
+
+State 0
+
+    0 $accept: . Input $end
+
+    $default  reduce using rule 1 (Input)
+
+    Input  go to state 1
+
+
+State 1
+
+    0 $accept: Input . $end
+    2 Input: Input . Line
+
+    $end      shift, and go to state 2
+    END_LINE  shift, and go to state 3
+    END       shift, and go to state 4
+    IF        shift, and go to state 5
+    PRINT     shift, and go to state 6
+
+    Line          go to state 7
+    Expression    go to state 8
+    IfExpression  go to state 9
+
+
+State 2
+
+    0 $accept: Input $end .
+
+    $default  accept
+
+
+State 3
+
+    3 Line: END_LINE .
+
+    $default  reduce using rule 3 (Line)
+
+
+State 4
+
+    6 Line: END .
+
+    $default  reduce using rule 6 (Line)
+
+
+State 5
+
+    8 IfExpression: IF . BoolComparasion THEN
+
+    IDENTIFIER  shift, and go to state 10
+
+    BoolComparasion  go to state 11
+    BoolExpression   go to state 12
+
+
+State 6
+
+    7 Expression: PRINT . STRING_VALUE
+
+    STRING_VALUE  shift, and go to state 13
+
+
+State 7
+
+    2 Input: Input Line .
+
+    $default  reduce using rule 2 (Input)
+
+
+State 8
+
+    4 Line: Expression .
+
+    $default  reduce using rule 4 (Line)
+
+
+State 9
+
+    5 Line: IfExpression .
+
+    $default  reduce using rule 5 (Line)
+
+
+State 10
+
+   11 BoolExpression: IDENTIFIER . LogicalComparer IDENTIFIER
+
+    LESS_THAN         shift, and go to state 14
+    GREATER_THAN      shift, and go to state 15
+    LESS_OR_EQUAL     shift, and go to state 16
+    GREATER_OR_EQUAL  shift, and go to state 17
+    DIFFERENT         shift, and go to state 18
+    EQUAL             shift, and go to state 19
+
+    LogicalComparer  go to state 20
+
+
+State 11
+
+    8 IfExpression: IF BoolComparasion . THEN
+
+    THEN  shift, and go to state 21
+
+
+State 12
+
+    9 BoolComparasion: BoolExpression . BinaryOperator BoolExpression
+   10                | BoolExpression .
+
+    AND  shift, and go to state 22
+    OR   shift, and go to state 23
+
+    $default  reduce using rule 10 (BoolComparasion)
+
+    BinaryOperator  go to state 24
+
+
+State 13
+
+    7 Expression: PRINT STRING_VALUE .
+
+    $default  reduce using rule 7 (Expression)
+
+
+State 14
+
+   12 LogicalComparer: LESS_THAN .
+
+    $default  reduce using rule 12 (LogicalComparer)
+
+
+State 15
+
+   13 LogicalComparer: GREATER_THAN .
+
+    $default  reduce using rule 13 (LogicalComparer)
+
+
+State 16
+
+   14 LogicalComparer: LESS_OR_EQUAL .
+
+    $default  reduce using rule 14 (LogicalComparer)
+
+
+State 17
+
+   15 LogicalComparer: GREATER_OR_EQUAL .
+
+    $default  reduce using rule 15 (LogicalComparer)
+
+
+State 18
+
+   16 LogicalComparer: DIFFERENT .
+
+    $default  reduce using rule 16 (LogicalComparer)
+
+
+State 19
+
+   17 LogicalComparer: EQUAL .
+
+    $default  reduce using rule 17 (LogicalComparer)
+
+
+State 20
+
+   11 BoolExpression: IDENTIFIER LogicalComparer . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 25
+
+
+State 21
+
+    8 IfExpression: IF BoolComparasion THEN .
+
+    $default  reduce using rule 8 (IfExpression)
+
+
+State 22
+
+   18 BinaryOperator: AND .
+
+    $default  reduce using rule 18 (BinaryOperator)
+
+
+State 23
+
+   19 BinaryOperator: OR .
+
+    $default  reduce using rule 19 (BinaryOperator)
+
+
+State 24
+
+    9 BoolComparasion: BoolExpression BinaryOperator . BoolExpression
+
+    IDENTIFIER  shift, and go to state 10
+
+    BoolExpression  go to state 26
+
+
+State 25
+
+   11 BoolExpression: IDENTIFIER LogicalComparer IDENTIFIER .
+
+    $default  reduce using rule 11 (BoolExpression)
+
+
+State 26
+
+    9 BoolComparasion: BoolExpression BinaryOperator BoolExpression .
+
+    $default  reduce using rule 9 (BoolComparasion)
