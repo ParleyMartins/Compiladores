@@ -5,3 +5,5 @@ prog
 saida
 *.l~
 *.y~
+entrada
+entrada~

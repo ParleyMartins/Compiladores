@@ -55,8 +55,6 @@
 %token END_WHILE
 %token END_FUNCTION
 
-%token QUOTES
-
 %start Input
 
 %%
@@ -69,46 +67,41 @@ Input:
 Line:
 	END_LINE
 	| Expression { 
-		printf("\n");
 	}
 	| IfExpression
+	| END { 
+		exit(EXIT_SUCCESS); 
+	}
 	;
 
 Expression:
-	PRINT QUOTES WordExpression QUOTES {
-		printf("codigo em python:\n");
-		printf("\tprint \"%s\"", $3);	
+	PRINT STRING_VALUE {
+		printf("\tprint %s\n", $2);	
 	}
 	;
 
-
-WordExpression:
-	STRING_VALUE {
-		$$ = $1;
-	}
-	| NUMBER {
-		$$ = $1;
-	}
-	|IDENTIFIER {
-		$$ = $1;
-	}
-	;
 
 IfExpression:
-	IF OPEN_PARENTHESIS {
-		printf("codigo em python:\n");
-		printf("\tif ");
+	IF OPEN_PARENTHESIS BoolExpression CLOSE_PARENTHESIS {
+		printf("\tif %s\n", $3);
 	}
-	| BoolExpression CLOSE_PARENTHESIS
 	;
 
 BoolExpression:
-	/*Empty Line*/
+	/*Empty Line*/ {
+		$$ = "";	
+	}
 	| IDENTIFIER LogicalComparer IDENTIFIER BoolExpression {
-		printf("%s %s %s \n", $1, $2, $3);
+		$$ = $1;
+		strcat($$, " ");
+		strcat($$, $2);
+		strcat($$, " ");
+		strcat($$, $3);
+		strcat($$, $4);
 	}
 	| BinaryOperator BoolExpression {
-		printf(" %s ", $1);
+		$$ = $1;
+		strcat($$, $2);
 	}
 	;
 
@@ -135,10 +128,10 @@ LogicalComparer:
 
 BinaryOperator:
 	AND {
-		$$ = "and";	
+		$$ = " and ";	
 	}
 	| OR {
-		$$ = "or";	
+		$$ = " or ";	
 	}
 	;
 
@@ -149,6 +142,7 @@ int yyerror(char *s) {
 }
 
 int main(int argc, char* argv[]) {
+	printf("Codigo em python:\n");
 	yyparse();
 }
 
