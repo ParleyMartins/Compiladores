@@ -3,6 +3,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
+	int lineNumber = 1;
 %}
 
 %token PLUS
@@ -38,6 +39,10 @@
 %token WHILE
 %token FUNCTION
 
+%token FROM
+%token TO
+%token STEP
+
 %token PRINT
 %token SCAN
 
@@ -66,7 +71,9 @@ Input:
 	;
 
 Line:
-	END_LINE
+	END_LINE {
+		lineNumber++;
+	}
 	| Expression
 	| END { 
 		exit(EXIT_SUCCESS); 
@@ -77,6 +84,7 @@ Expression:
 	PrintExpression
 	| IfExpression
 	| WhileExpression
+	| ForExpression
 	;
 
 PrintExpression:
@@ -99,7 +107,7 @@ IfExpression:
 
 BoolComparasion:
 	 BoolExpression BinaryOperator BoolComparasion {
-		char *str2 = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
+		char *str2 = (char *) malloc (sizeof(char));
 		strcpy(str2, $1);
 		strcat(str2, " ");
 		strcat(str2, $2);
@@ -112,10 +120,9 @@ BoolComparasion:
 	}
 	;
 	
-
 BoolExpression:
 	IDENTIFIER LogicalComparer IDENTIFIER {
-		char *str = (char *) malloc (1 + sizeof($1) + sizeof(" ") + sizeof($2) + sizeof(" ") + sizeof($3) );
+		char *str = (char *) malloc (sizeof(char));
 		strcpy(str, $1);
 		strcat(str, " ");
 		strcat(str, $2);
@@ -165,15 +172,32 @@ WhileExpression:
 	}
 	;
 	
+ForExpression:
+	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
+		printf("\tfor %s in range(%s , %s, %s):\n", $2, $4, $6, $8);
+	}
+	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
+		printf("\tfor %s in range(%s , %s):\n", $2, $4, $6);
+	}
+	| END_FOR
+	;
+
+NumberOrIdentifier:
+	IDENTIFIER {
+		$$ = $1;
+	}
+	| NUMBER {
+		$$ = $1;
+	}
+	;
 
 %%
 
 int yyerror(char *s) {
-	printf("%s\n",s);
+	printf("%s Line %d\n", s, lineNumber);
 }
 
 int main(int argc, char* argv[]) {
 	printf("Codigo em python:\n");
 	yyparse();
 }
-

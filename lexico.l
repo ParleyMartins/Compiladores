@@ -50,6 +50,10 @@ identifier {letter}(_|{letter}|{digit})*
 "funcao"		return (FUNCTION);
 "enquanto"	return (WHILE);
 
+"de"			return (FROM);
+"ate"		return (TO);
+"passo"		return (STEP);
+
 "fim_se"		return (END_IF);
 "fim_para"	return (END_FOR);
 "fim_enquanto"	return (END_WHILE);
@@ -83,10 +87,8 @@ identifier {letter}(_|{letter}|{digit})*
 			return (STRING_VALUE);
 		}
 
-
 %%
 
 yywrap () {
 	return 0;
 }
-
