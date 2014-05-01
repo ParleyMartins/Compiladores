@@ -3,6 +3,8 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
+	#include "table.h"
+	Table* table;
 	int lineNumber = 1;
 %}
 
@@ -74,8 +76,23 @@ Line:
 	END_LINE {
 		lineNumber++;
 	}
-	| Expression
+	| START {
+		table = createTable();
+		printf("start\n");
+	}
+	| Expression {
+		Symbol* main = createSymbol();
+		main = initializeSymbol(NULL, "method",
+				"main", "", 0, 1);
+		table = initializeTable(main);
+		printTable(table);
+		free(main);
+	}
 	| END { 
+		printf("end");
+		if(!table){
+			deleteTable(table);
+		}
 		exit(EXIT_SUCCESS); 
 	}
 	;
@@ -198,6 +215,6 @@ int yyerror(char *s) {
 }
 
 int main(int argc, char* argv[]) {
-	printf("Codigo em python:\n");
+	//printf("Codigo em python:\n");
 	yyparse();
 }

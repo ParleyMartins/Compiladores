@@ -20,5 +20,5 @@ lexico.c: lexico.l sintatico.c
 
 clean:
 	rm sintatico.c sintatico.h sintatico.output
-	rm lexico.c 
+	rm lexico.c lexico.h
 	rm prog saida
