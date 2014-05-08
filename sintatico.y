@@ -6,6 +6,7 @@
 	#include "table.h"
 	Table* table;
 	int lineNumber = 1;
+	int scope = 0;
 %}
 
 %token PLUS
@@ -63,6 +64,9 @@
 %token END_WHILE
 %token END_FUNCTION
 
+%token TRUE
+%token FALSE
+
 %start Input
 
 %%
@@ -79,6 +83,7 @@ Line:
 	| START {
 		table = createTable();
 		printf("start\n");
+		scope = scope + 1;
 	}
 	| Expression {
 		Symbol* main = createSymbol();
@@ -93,6 +98,7 @@ Line:
 		if(!table){
 			deleteTable(table);
 		}
+		scope = scope - 1;
 		exit(EXIT_SUCCESS); 
 	}
 	;
@@ -208,7 +214,56 @@ NumberOrIdentifier:
 	}
 	;
 
+AttribuitionExpression:
+	IDENTIFIER RECEIVE AttribuitionValue {
+	}
+	;
+
+AttribuitionValue:
+	NUMBER {
+		$$ = $1;
+	}
+	| STRING {
+		$$ = $1;
+	}
+	| TRUE {
+		$$ = "true";
+	}
+	| FALSE {
+		$$ = "false";
+	}
+	;
+
+DeclarationExpression:
+	Type IDENTIFIER {
+		insertVariable(table, $1, $2, NULL, NULL, scope);
+	}
+	| Type IDENTIFIER RECEIVE AttribuitionValue {
+		insertVariable(table, $1, $2, $4, NULL, scope);		
+	}
+	;
+
+Type:
+	INT {
+		$$ = "int";
+	}
+	| FLOAT {
+		$$ = "float";
+	}
+	| CHAR {
+		$$ = "char";
+	}
+	| STRING_TYPE {
+		$$ = "string";
+	}
+	| BOOL {
+		$$ = "bool";
+	}
+	;
+
 %%
+
+void 
 
 int yyerror(char *s) {
 	printf("%s Line %d\n", s, lineNumber);

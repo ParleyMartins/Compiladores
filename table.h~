@@ -19,14 +19,10 @@ typedef struct table {
 Table* createTable(Symbol* head);
 Symbol* createSymbol(Symbol* prev, char* type, char* name, 
 	char* value, char* returnedValue, int scope);
-
 void insertSymbol(Table* table, Symbol* symbol);
-
 void deleteSymbol(Symbol* symbol);
 void deleteTable(Table* table);
-
 Symbol* findName (const Table* table, char* name);
-
 void printTable(const Table *table);
 
 #endif

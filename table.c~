@@ -104,23 +104,3 @@ void printTable(const Table *table) {
 				prev->value, (void *) prev->prev);
 	}
 }
-
-void insertVariable(Table* table, char* type, char* name, 
-		char* value, char* returnedValue, int scope){
-	
-	if (table == NULL){
-		yyerror("Funcao nao declarada");	
-	}
-
-	Symbol* variable  = findName(table, scope);
-	
-	if (variable != NULL && scope == variable->scope) {
-		yyerror("Variavel ja declarada");	
-	} else {
-		variable = createSymbol(table->tail, type, name, value, returnedValue, scope);
-		if (variable == NULL){
-			yyerror("Simbolo nao inicializado");
-		}
-		insertSymbol(table, variable);
-	}
-}

@@ -64,6 +64,8 @@ identifier {letter}(_|{letter}|{digit})*
 "caractere"	return (CHAR);
 "texto"		return (STRING_TYPE);
 "booleano"	return (BOOL);
+"verdadeiro" 	return (TRUE);
+"falso"		return (FALSE); 
 
 
 
