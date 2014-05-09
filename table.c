@@ -7,7 +7,7 @@ Symbol* createSymbol(Symbol* prev,
 		char* type, char* name,
 		char* value, char* returnedValue, int scope){
 	
-	Symbol* current = (Symbol *) calloc(1, sizeof(Symbol));
+	Symbol* current = calloc(1, sizeof(Symbol));
 	current->type = type;
 	current->name = name;
 	current->value = value;
@@ -19,9 +19,9 @@ Symbol* createSymbol(Symbol* prev,
 }
 
 Table* createTable(Symbol* head){
-	Table* table = (Table *) calloc(1, sizeof(Table));
+	Table* table = calloc(1, sizeof(Table));
 	table->head = head;
-	table->tail = head;
+	//table->tail = head;
 
 	return table;
 }
@@ -64,7 +64,8 @@ void deleteTable(Table* table){
 	free(table);
 }
 
-Symbol* findName (const Table* table, char* name) {
+Symbol* findName (const Table* table, const char* name) {
+	printf("	FindName {");
 	if(!table){
 		return NULL;
 	}
@@ -73,54 +74,69 @@ Symbol* findName (const Table* table, char* name) {
 		return NULL;
 	}
 
-	Symbol* current;
+	Symbol* current = NULL;
 	for(current = table->tail; current; current = current->prev){
 		if(strcmp(current->name, name) == 0){
-			return current;
+			break;
 		}
 	}
+	printf("	} FindName OK, (%p) \n", current);
 	return current;
 }
 
+void printSymbol(const Symbol* current, int position){
+	printf("	Posicao %d (%p):\n\
+	type = %s\n\
+	name = %s\n\
+	returnedValue = %s\n\
+	scope = %d\n\
+	value = %s\n\
+	prev = %p\n\n", position, (void *) current, 
+				current->type,
+				current->name,
+				current->returnedValue,
+				current->scope,
+				current->value, (void *) current->prev);
+}
+
 void printTable(const Table *table) {
-	Symbol *prev;
+	Symbol *current;
 	int i;
-	
-	if (table == NULL)
+	printf("PrintTable {\n");
+	if (table == NULL){
 		return;
-	
-	for (prev = table->tail, i = 0; prev; prev = prev->prev, i++)
-	{
-		printf("No %d (%p):\ninfo = %s\n\
-			%s\n\
-			%s\n\
-			%d\n\
-			%s\n\
-			prev " "= %p\n\n", i, (void *) prev, 
-				prev->type,
-				prev->name,
-				prev->returnedValue,
-				prev->scope,
-				prev->value, (void *) prev->prev);
 	}
+	
+	for (current = table->tail, i = 0; current; current = current->prev, i++) {
+		printSymbol(current, i);
+		//free(current);
+	}
+	printf("} PrintTable \n");
 }
 
 void insertVariable(Table* table, char* type, char* name, 
 		char* value, char* returnedValue, int scope){
 	
+	printf("InsertVariable {\n");	
 	if (table == NULL){
-		yyerror("Funcao nao declarada");	
+		printf("Funcao nao declarada");
+		return;	
 	}
 
-	Symbol* variable  = findName(table, scope);
+	Symbol* variable = findName(table, name);
 	
 	if (variable != NULL && scope == variable->scope) {
-		yyerror("Variavel ja declarada");	
+		printf("Variavel ja declarada");	
+		return;
 	} else {
 		variable = createSymbol(table->tail, type, name, value, returnedValue, scope);
 		if (variable == NULL){
-			yyerror("Simbolo nao inicializado");
+			printf("Simbolo nao inicializado");
+			return;
 		}
 		insertSymbol(table, variable);
+		findName(table, name);
+		
 	}
+	printf("} InsertVariable OK\n");
 }

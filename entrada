@@ -1,30 +1,8 @@
 inicio
 
-escreva "asda"
-escreva " "
-escreva ""
-escreva "asd teasd f123 123asd 123"
-escreva "123"
-
-se a<b entao
-se a<b e b>c entao
-se a<b ou b>c entao
-se a<b ou b>c e b>=c entao
-senao
-fim_se
-
-para a de 0 ate 10 passo 2
-para a de 0 ate 10 
-para a de v ate b passo 2
-para a de s ate z 
-para a de v ate 10 passo 2
-para a de 29 ate b passo 2
-para a de s ate 29
-para a de 12 ate z 
-fim_para
-
-enquanto a<=b
-enquanto a=v e x=/=f ou a<=t
-fim_enquanto
+inteiro a 
+inteiro b
+inteiro c <- 10
+inteiro a
 
 fim

@@ -25,7 +25,7 @@ void insertSymbol(Table* table, Symbol* symbol);
 void deleteSymbol(Symbol* symbol);
 void deleteTable(Table* table);
 
-Symbol* findName (const Table* table, char* name);
+Symbol* findName (const Table* table, const char* name);
 
 void printTable(const Table *table);
 

@@ -25,7 +25,7 @@
 
 %token DIFFERENT
 %token EQUAL
-%token RECEIVE 
+%token RECEIVES 
 
 %token AND
 %token OR
@@ -81,17 +81,16 @@ Line:
 		lineNumber++;
 	}
 	| START {
-		table = createTable();
+		Symbol* main = createSymbol(NULL, "void",
+				"main", "", "int", scope);
+		table = createTable(main);
+		//printTable(table);
 		printf("start\n");
 		scope = scope + 1;
+		free(main);
 	}
 	| Expression {
-		Symbol* main = createSymbol();
-		main = initializeSymbol(NULL, "method",
-				"main", "", 0, 1);
-		table = initializeTable(main);
-		printTable(table);
-		free(main);
+		
 	}
 	| END { 
 		printf("end");
@@ -108,6 +107,10 @@ Expression:
 	| IfExpression
 	| WhileExpression
 	| ForExpression
+	| AttribuitionExpression
+	| DeclarationExpression {
+		printTable(table);
+	}
 	;
 
 PrintExpression:
@@ -215,7 +218,7 @@ NumberOrIdentifier:
 	;
 
 AttribuitionExpression:
-	IDENTIFIER RECEIVE AttribuitionValue {
+	IDENTIFIER RECEIVES AttribuitionValue {
 	}
 	;
 
@@ -223,7 +226,7 @@ AttribuitionValue:
 	NUMBER {
 		$$ = $1;
 	}
-	| STRING {
+	| STRING_VALUE {
 		$$ = $1;
 	}
 	| TRUE {
@@ -238,8 +241,8 @@ DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
 	}
-	| Type IDENTIFIER RECEIVE AttribuitionValue {
-		insertVariable(table, $1, $2, $4, NULL, scope);		
+	| Type IDENTIFIER RECEIVES AttribuitionValue {
+		insertVariable(table, $1, $2, $4, NULL, scope);			
 	}
 	;
 
@@ -262,8 +265,6 @@ Type:
 	;
 
 %%
-
-void 
 
 int yyerror(char *s) {
 	printf("%s Line %d\n", s, lineNumber);

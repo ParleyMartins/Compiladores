@@ -33,7 +33,7 @@ identifier {letter}(_|{letter}|{digit})*
 "^"			return (POWER);
 "=/="		return (DIFFERENT);
 "="			return (EQUAL);
-"<-"			return (RECEIVE);
+"<-"			return (RECEIVES);
 "\n" 		return (END_LINE);
 
 "e"   		return(AND); 
