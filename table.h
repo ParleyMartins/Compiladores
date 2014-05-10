@@ -29,4 +29,12 @@ Symbol* findName (const Table* table, const char* name);
 
 void printTable(const Table *table);
 
+int insertVariable(Table* table, char* type, char* name, 
+		char* value, char* returnedValue, int scope);
+
+void printSymbol(const Symbol* current, int position);
+
+int setVariable(const Table* table, const char* name, char* value);
+// void checkError(int code, char* identifier);
+
 #endif

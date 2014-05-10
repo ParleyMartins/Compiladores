@@ -86,11 +86,11 @@ Line:
 		table = createTable(main);
 		//printTable(table);
 		printf("start\n");
-		scope = scope + 1;
-		free(main);
+		scope++;
+		//free(main);
 	}
 	| Expression {
-		
+		printTable(table);
 	}
 	| END { 
 		printf("end");
@@ -108,9 +108,7 @@ Expression:
 	| WhileExpression
 	| ForExpression
 	| AttribuitionExpression
-	| DeclarationExpression {
-		printTable(table);
-	}
+	| DeclarationExpression 
 	;
 
 PrintExpression:
@@ -122,12 +120,13 @@ PrintExpression:
 IfExpression:
 	IF BoolComparasion THEN {
 		printf("\tif  %s:\n", $2);
+		scope++; 
 	}
 	| ELSE {
 		printf("\telse:\n");			
 	}
 	| END_IF {
-		// End if. Do nothing.	
+		scope--;
 	}
 	;
 
@@ -192,20 +191,25 @@ BinaryOperator:
 WhileExpression:
 	WHILE BoolComparasion {
 		printf("\twhile  %s:\n", $2);
+		scope++;
 	}
 	| END_WHILE {
-		// While end, do nothing. 	
+		scope--; 	
 	}
 	;
 	
 ForExpression:
 	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
 		printf("\tfor %s in range(%s , %s, %s):\n", $2, $4, $6, $8);
+		scope++;
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
 		printf("\tfor %s in range(%s , %s):\n", $2, $4, $6);
+		scope++;
 	}
-	| END_FOR
+	| END_FOR {
+		scope--;
+	}
 	;
 
 NumberOrIdentifier:
@@ -219,6 +223,7 @@ NumberOrIdentifier:
 
 AttribuitionExpression:
 	IDENTIFIER RECEIVES AttribuitionValue {
+		setVariable(table, $1, $3);
 	}
 	;
 
@@ -239,10 +244,12 @@ AttribuitionValue:
 
 DeclarationExpression:
 	Type IDENTIFIER {
-		insertVariable(table, $1, $2, NULL, NULL, scope);
+		int	errorCode = insertVariable(table, $1, $2, NULL, NULL, scope);
+		//checkError(errorCode, $1);
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
-		insertVariable(table, $1, $2, $4, NULL, scope);			
+		int	errorCode = insertVariable(table, $1, $2, $4, NULL, scope);			
+		//checkError(errorCode, $1);
 	}
 	;
 
@@ -265,6 +272,8 @@ Type:
 	;
 
 %%
+
+
 
 int yyerror(char *s) {
 	printf("%s Line %d\n", s, lineNumber);

@@ -3,6 +3,6 @@ inicio
 inteiro a 
 inteiro b
 inteiro c <- 10
-inteiro a
+a <- 5
 
 fim
