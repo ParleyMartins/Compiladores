@@ -5,6 +5,7 @@
 	#include <string.h>
 	#include "table.h"
 	Table* table;
+	int debugOption;
 	int lineNumber = 1;
 	int scope = 0;
 %}
@@ -83,17 +84,15 @@ Line:
 	| START {
 		Symbol* main = createSymbol(NULL, "void",
 				"main", "", "int", scope);
-		table = createTable(main);
-		//printTable(table);
-		printf("start\n");
+		table = createTable(main, debugOption);
 		scope++;
-		//free(main);
+
+		printf("#!/usr/bin/env python\n");
 	}
 	| Expression {
 		printTable(table);
 	}
 	| END { 
-		printf("end");
 		if(!table){
 			deleteTable(table);
 		}
@@ -114,6 +113,14 @@ Expression:
 PrintExpression:
 	PRINT STRING_VALUE {
 		printf("\tprint %s\n", $2);	
+	}
+	| PRINT IDENTIFIER {
+		Symbol* variable = findName(table, $2);
+		if(variable == NULL){
+			printf("Variavel nao declarada");
+			return UNDECLARED_VARIABLE;
+		}
+		printf("%s\n", variable->value);
 	}
 	;
 
@@ -224,6 +231,7 @@ NumberOrIdentifier:
 AttribuitionExpression:
 	IDENTIFIER RECEIVES AttribuitionValue {
 		setVariable(table, $1, $3);
+		printf("%s = %s\n", $1, $3);
 	}
 	;
 
@@ -244,12 +252,12 @@ AttribuitionValue:
 
 DeclarationExpression:
 	Type IDENTIFIER {
-		int	errorCode = insertVariable(table, $1, $2, NULL, NULL, scope);
+		insertVariable(table, $1, $2, NULL, NULL, scope);
 		//checkError(errorCode, $1);
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
-		int	errorCode = insertVariable(table, $1, $2, $4, NULL, scope);			
-		//checkError(errorCode, $1);
+		insertVariable(table, $1, $2, $4, NULL, scope);			
+		printf("%s = %s\n", $1, $3);
 	}
 	;
 
@@ -281,5 +289,10 @@ int yyerror(char *s) {
 
 int main(int argc, char* argv[]) {
 	//printf("Codigo em python:\n");
+	if(strcmp(argv[1], "-debug") == 0){ 
+		debugOption = 1;
+	} else {
+		debugOption = 0;
+	}
 	yyparse();
 }
