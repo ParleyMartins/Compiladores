@@ -257,7 +257,7 @@ DeclarationExpression:
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
 		insertVariable(table, $1, $2, $4, NULL, scope);			
-		printf("%s = %s\n", $1, $3);
+		printf("%s = %s\n", $2, $4);
 	}
 	;
 
