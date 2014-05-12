@@ -289,10 +289,12 @@ int yyerror(char *s) {
 
 int main(int argc, char* argv[]) {
 	//printf("Codigo em python:\n");
-	if(strcmp(argv[1], "-debug") == 0){ 
-		debugOption = 1;
-	} else {
-		debugOption = 0;
+	if(argv[1] != NULL){
+		if(strcmp(argv[1], "-debug") == 0){ 
+			debugOption = 1;
+		} else {
+			debugOption = 0;
+		}
 	}
 	yyparse();
 }

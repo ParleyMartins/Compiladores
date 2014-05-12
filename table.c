@@ -113,12 +113,13 @@ void printTable(const Table *table) {
 	if (table == NULL){
 		return;
 	}
-	
-	for (current = table->tail, i = 0; current; current = current->prev, i++) {
-		printSymbol(current, i);
-		//free(current);
+	if(table->debugOption > 0){
+		for (current = table->tail, i = 0; current; current = current->prev, i++) {
+			printSymbol(current, i);
+			//free(current);
+		}
+		debugMessages(table, "} PrintTable \n");
 	}
-	debugMessages(table, "} PrintTable \n");
 }
 
 int insertVariable(Table* table, char* type, char* name, 
