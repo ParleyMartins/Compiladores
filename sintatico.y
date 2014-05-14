@@ -85,18 +85,18 @@ Line:
 		Symbol* main = createSymbol(NULL, "void",
 				"main", "", "int", scope);
 		table = createTable(main, debugOption);
-		scope++;
 
 		printf("#!/usr/bin/env python\n");
 	}
 	| Expression {
 		printTable(table);
+		printf("\n");
+		indent(scope);
 	}
 	| END { 
 		if(!table){
 			deleteTable(table);
 		}
-		scope = scope - 1;
 		exit(EXIT_SUCCESS); 
 	}
 	;
@@ -112,7 +112,7 @@ Expression:
 
 PrintExpression:
 	PRINT STRING_VALUE {
-		printf("\tprint %s\n", $2);	
+		printf("print %s\n", $2);	
 	}
 	| PRINT IDENTIFIER {
 		Symbol* variable = findName(table, $2);
@@ -120,17 +120,17 @@ PrintExpression:
 			printf("Variavel nao declarada");
 			return UNDECLARED_VARIABLE;
 		}
-		printf("%s\n", variable->value);
+		printf("print %s", $2);
 	}
 	;
 
 IfExpression:
 	IF BoolComparasion THEN {
-		printf("\tif  %s:\n", $2);
+		printf("if  %s:", $2);
 		scope++; 
 	}
 	| ELSE {
-		printf("\telse:\n");			
+		printf("else:");			
 	}
 	| END_IF {
 		scope--;
@@ -197,7 +197,7 @@ BinaryOperator:
 
 WhileExpression:
 	WHILE BoolComparasion {
-		printf("\twhile  %s:\n", $2);
+		printf("while  %s:", $2);
 		scope++;
 	}
 	| END_WHILE {
@@ -207,11 +207,11 @@ WhileExpression:
 	
 ForExpression:
 	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
-		printf("\tfor %s in range(%s , %s, %s):\n", $2, $4, $6, $8);
+		printf("for %s in range(%s , %s, %s):", $2, $4, $6, $8);
 		scope++;
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
-		printf("\tfor %s in range(%s , %s):\n", $2, $4, $6);
+		printf("for %s in range(%s , %s):", $2, $4, $6);
 		scope++;
 	}
 	| END_FOR {
@@ -231,7 +231,7 @@ NumberOrIdentifier:
 AttribuitionExpression:
 	IDENTIFIER RECEIVES AttribuitionValue {
 		setVariable(table, $1, $3);
-		printf("%s = %s\n", $1, $3);
+		printf("%s = %s", $1, $3);
 	}
 	;
 
@@ -248,6 +248,9 @@ AttribuitionValue:
 	| FALSE {
 		$$ = "false";
 	}
+	| MathExpression {
+		$$ = $1;
+	}
 	;
 
 DeclarationExpression:
@@ -257,7 +260,7 @@ DeclarationExpression:
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
 		insertVariable(table, $1, $2, $4, NULL, scope);			
-		printf("%s = %s\n", $2, $4);
+		printf("%s = %s", $2, $4);
 	}
 	;
 
@@ -279,6 +282,60 @@ Type:
 	}
 	;
 
+MathExpression:
+	MathParam
+	| MathExpression Operator MathExpression {
+		char *str = (char *) malloc (sizeof(char));
+		strcpy(str, $1);
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, $3);
+		$$ = str;
+	}
+	| OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS {
+		char *str = (char *) malloc (sizeof(char));
+		strcpy(str, "(");
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, ")");
+		$$ = str;
+	}
+	;
+
+MathParam:
+	IDENTIFIER {
+		Symbol* val = findName(table,$1);
+		if(val!=NULL && val->value!=NULL){
+			if(strcmp(val->type,"int")==0){
+				$$ = $1;
+			} else {
+				printf("ERROR! TYPE");
+			}
+		} else {
+			printf("ERROR! NULL");
+		}
+	}
+	| NUMBER {
+		$$ = $1;
+	}
+	;
+
+Operator:
+	PLUS {
+		$$ = "+";
+	}
+	| MINUS {
+		$$ = "-";
+	}
+	| DIVIDE {
+		$$ = "/";
+	}
+	| TIMES {
+		$$ = "*";
+	}
+	;
 %%
 
 
@@ -288,7 +345,6 @@ int yyerror(char *s) {
 }
 
 int main(int argc, char* argv[]) {
-	//printf("Codigo em python:\n");
 	if(argv[1] != NULL){
 		if(strcmp(argv[1], "-debug") == 0){ 
 			debugOption = 1;

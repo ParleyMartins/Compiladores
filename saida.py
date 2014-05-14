@@ -1,3 +1,12 @@
 #!/usr/bin/env python
-c = 10
-a = 5
+x = 4 + 12
+a = ( 10 - 20 )
+b = ( 39 * ( 23 / 2 ) )
+for x in range(2 , 5):
+	print "Hello"
+
+	
+if  a > b:
+	print "Oi"
+
+	

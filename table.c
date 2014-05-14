@@ -16,10 +16,10 @@ Table* createTable(Symbol* head, int debugOption){
 	return table;
 }
 
-Symbol* createSymbol(Symbol* prev, 
+Symbol* createSymbol(Symbol* prev,
 		char* type, char* name,
 		char* value, char* returnedValue, int scope){
-	
+
 	Symbol* current = calloc(1, sizeof(Symbol));
 	current->type = type;
 	current->name = name;
@@ -40,7 +40,7 @@ void insertSymbol(Table* table, Symbol* symbol){
 		table->tail = symbol;
 		return;
 	}
-	
+
 	symbol->prev = table->tail;
 	table->tail = symbol;
 }
@@ -61,7 +61,7 @@ void deleteTable(Table* table){
 	Symbol* current;
 	Symbol* temp = table->tail;
 	for(current = table->tail; current; current = temp->prev){
-		temp = temp->prev;		
+		temp = temp->prev;
 		deleteSymbol(current);
 	}
 	free(table->head);
@@ -85,7 +85,7 @@ Symbol* findName(const Table* table, const char* name) {
 		if(strcmp(current->name, name) == 0){
 			break;
 		}
-	} 
+	}
 	debugMessages(table, "	} FindName OK.\n");
 	return current;
 }
@@ -98,7 +98,7 @@ void printSymbol(const Symbol* current, int position){
 	returnedValue = %s\n\
 	scope = %d\n\
 	value = %s\n\
-	prev = %p\n\n", position, (void *) current, 
+	prev = %p\n\n", position, (void *) current,
 				current->type,
 				current->name,
 				current->returnedValue,
@@ -122,19 +122,19 @@ void printTable(const Table *table) {
 	}
 }
 
-int insertVariable(Table* table, char* type, char* name, 
+int insertVariable(Table* table, char* type, char* name,
 		char* value, char* returnedValue, int scope){
-	
-	debugMessages(table, "InsertVariable {\n");	
+
+	debugMessages(table, "InsertVariable {\n");
 	if (table == NULL){
 		debugMessages(table, "Funcao nao declarada\n");
-		return UNDECLARED_FUNCTION;	
+		return UNDECLARED_FUNCTION;
 	}
 
 	Symbol* variable = findName(table, name);
-	
+
 	if (variable != NULL && scope == variable->scope) {
-		debugMessages(table, "Variavel ja declarada\n");	
+		debugMessages(table, "Variavel ja declarada\n");
 		return VARIABLE_ALREADY_DECLARED;
 	} else {
 		variable = createSymbol(table->tail, type, name, value, returnedValue, scope);
@@ -144,7 +144,7 @@ int insertVariable(Table* table, char* type, char* name,
 		}
 		insertSymbol(table, variable);
 		findName(table, name);
-		
+
 	}
 	debugMessages(table, "} InsertVariable OK\n");
 }
@@ -165,12 +165,18 @@ void debugMessages(const Table* table, const char* message){
 	}
 
 	if (table->debugOption > 0){
-		printf("%s\n", message);	
+		printf("%s\n", message);
 	} else {
 		// Nothing to do.
 	}
 }
 
+void indent(int scope){
+	int i;
+	for(i=0;i<scope;i++){
+		printf("\t");
+	}
+}
 
 /*void checkError(int code, char* identifier){
 
@@ -178,11 +184,11 @@ void debugMessages(const Table* table, const char* message){
 	lineString = lineNumber + '0';
 	strcat(errorLog, "Na linha ");
 	strcat(errorLog, lineString);
-	
-	switch(code){		
+
+	switch(code){
 		case UNDECLARED_FUNCTION:
 			strcat(errorLog, ". Funcao nao declarada.\n");
-		break;	
+		break;
 		case VARIABLE_ALREADY_DECLARED:
 			strcat(errorLog, ". Variavel ");
 			strcat(errorLog, identifier);
