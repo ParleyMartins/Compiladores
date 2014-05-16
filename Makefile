@@ -6,7 +6,7 @@ BFLAGS = -v -d
 all: prog
 
 prog: sintatico.c lexico.c table.c
-	$(CC) -o prog sintatico.c lexico.c $(CFLAGS)
+	$(CC) -o prog sintatico.c lexico.c table.c $(CFLAGS)
 
 sintatico.c: sintatico.y table.c
 	bison $(BFLAGS) sintatico.y
@@ -14,7 +14,7 @@ sintatico.c: sintatico.y table.c
 	mv sintatico.tab.c sintatico.c
 
 lexico.c: lexico.l sintatico.c
-	flex lexico.l table.c
+	flex lexico.l 
 	mv lex.yy.c lexico.c
 
 

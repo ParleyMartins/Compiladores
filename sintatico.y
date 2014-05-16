@@ -5,6 +5,7 @@
 	#include <string.h>
 	#include "table.h"
 	Table* table;
+	int debugOption;
 	int lineNumber = 1;
 	int scope = 0;
 %}
@@ -25,7 +26,7 @@
 
 %token DIFFERENT
 %token EQUAL
-%token RECEIVE 
+%token RECEIVES 
 
 %token AND
 %token OR
@@ -81,24 +82,21 @@ Line:
 		lineNumber++;
 	}
 	| START {
-		table = createTable();
-		printf("start\n");
-		scope = scope + 1;
+		Symbol* main = createSymbol(NULL, "void",
+				"main", "", "int", scope);
+		table = createTable(main, debugOption);
+
+		printf("#!/usr/bin/env python\n");
 	}
 	| Expression {
-		Symbol* main = createSymbol();
-		main = initializeSymbol(NULL, "method",
-				"main", "", 0, 1);
-		table = initializeTable(main);
 		printTable(table);
-		free(main);
+		printf("\n");
+		indent(scope);
 	}
 	| END { 
-		printf("end");
 		if(!table){
 			deleteTable(table);
 		}
-		scope = scope - 1;
 		exit(EXIT_SUCCESS); 
 	}
 	;
@@ -108,23 +106,34 @@ Expression:
 	| IfExpression
 	| WhileExpression
 	| ForExpression
+	| AttribuitionExpression
+	| DeclarationExpression 
 	;
 
 PrintExpression:
 	PRINT STRING_VALUE {
-		printf("\tprint %s\n", $2);	
+		printf("print %s\n", $2);	
+	}
+	| PRINT IDENTIFIER {
+		Symbol* variable = findName(table, $2);
+		if(variable == NULL){
+			printf("Variavel nao declarada");
+			return UNDECLARED_VARIABLE;
+		}
+		printf("print %s", $2);
 	}
 	;
 
 IfExpression:
 	IF BoolComparasion THEN {
-		printf("\tif  %s:\n", $2);
+		printf("if  %s:", $2);
+		scope++; 
 	}
 	| ELSE {
-		printf("\telse:\n");			
+		printf("else:");			
 	}
 	| END_IF {
-		// End if. Do nothing.	
+		scope--;
 	}
 	;
 
@@ -188,21 +197,26 @@ BinaryOperator:
 
 WhileExpression:
 	WHILE BoolComparasion {
-		printf("\twhile  %s:\n", $2);
+		printf("while  %s:", $2);
+		scope++;
 	}
 	| END_WHILE {
-		// While end, do nothing. 	
+		scope--; 	
 	}
 	;
 	
 ForExpression:
 	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
-		printf("\tfor %s in range(%s , %s, %s):\n", $2, $4, $6, $8);
+		printf("for %s in range(%s , %s, %s):", $2, $4, $6, $8);
+		scope++;
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
-		printf("\tfor %s in range(%s , %s):\n", $2, $4, $6);
+		printf("for %s in range(%s , %s):", $2, $4, $6);
+		scope++;
 	}
-	| END_FOR
+	| END_FOR {
+		scope--;
+	}
 	;
 
 NumberOrIdentifier:
@@ -215,7 +229,9 @@ NumberOrIdentifier:
 	;
 
 AttribuitionExpression:
-	IDENTIFIER RECEIVE AttribuitionValue {
+	IDENTIFIER RECEIVES AttribuitionValue {
+		setVariable(table, $1, $3);
+		printf("%s = %s", $1, $3);
 	}
 	;
 
@@ -223,7 +239,7 @@ AttribuitionValue:
 	NUMBER {
 		$$ = $1;
 	}
-	| STRING {
+	| STRING_VALUE {
 		$$ = $1;
 	}
 	| TRUE {
@@ -232,14 +248,19 @@ AttribuitionValue:
 	| FALSE {
 		$$ = "false";
 	}
+	| MathExpression {
+		$$ = $1;
+	}
 	;
 
 DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
+		//checkError(errorCode, $1);
 	}
-	| Type IDENTIFIER RECEIVE AttribuitionValue {
-		insertVariable(table, $1, $2, $4, NULL, scope);		
+	| Type IDENTIFIER RECEIVES AttribuitionValue {
+		insertVariable(table, $1, $2, $4, NULL, scope);			
+		printf("%s = %s", $2, $4);
 	}
 	;
 
@@ -261,15 +282,75 @@ Type:
 	}
 	;
 
+MathExpression:
+	MathParam
+	| MathExpression Operator MathExpression {
+		char *str = (char *) malloc (sizeof(char));
+		strcpy(str, $1);
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, $3);
+		$$ = str;
+	}
+	| OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS {
+		char *str = (char *) malloc (sizeof(char));
+		strcpy(str, "(");
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, ")");
+		$$ = str;
+	}
+	;
+
+MathParam:
+	IDENTIFIER {
+		Symbol* val = findName(table,$1);
+		if(val!=NULL && val->value!=NULL){
+			if(strcmp(val->type,"int")==0){
+				$$ = $1;
+			} else {
+				printf("ERROR! TYPE");
+			}
+		} else {
+			printf("ERROR! NULL");
+		}
+	}
+	| NUMBER {
+		$$ = $1;
+	}
+	;
+
+Operator:
+	PLUS {
+		$$ = "+";
+	}
+	| MINUS {
+		$$ = "-";
+	}
+	| DIVIDE {
+		$$ = "/";
+	}
+	| TIMES {
+		$$ = "*";
+	}
+	;
 %%
 
-void 
+
 
 int yyerror(char *s) {
 	printf("%s Line %d\n", s, lineNumber);
 }
 
 int main(int argc, char* argv[]) {
-	//printf("Codigo em python:\n");
+	if(argv[1] != NULL){
+		if(strcmp(argv[1], "-debug") == 0){ 
+			debugOption = 1;
+		} else {
+			debugOption = 0;
+		}
+	}
 	yyparse();
 }

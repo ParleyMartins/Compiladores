@@ -1,0 +1,12 @@
+inicio
+
+	inteiro x
+	inteiro a <- 10
+	inteiro b <- 2
+	para x de 2 ate 5
+		escreva "Hello"
+	fim_para
+	se a>b entao
+		escreva "Oi"
+	fim_se
+fim
