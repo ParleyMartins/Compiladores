@@ -1,8 +1,12 @@
 inicio
 
-inteiro a 
-inteiro b
-inteiro c <- 10
-a <- 5
-
+	inteiro x <- 4 + 12
+	inteiro a <- (10 - 20)
+	inteiro b <- (39 * (23/2))
+	para x de 2 ate 5
+		escreva "Hello"
+	fim_para
+	se a>b entao
+		escreva "Oi"
+	fim_se
 fim
