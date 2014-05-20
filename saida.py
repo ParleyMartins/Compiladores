@@ -1,12 +1,11 @@
 #!/usr/bin/env python
+print "teste"
+
 x = 4 + 12
-a = ( 10 - 20 )
+Error: syntax error Line 5
 b = ( 39 * ( 23 / 2 ) )
 for x in range(2 , 5):
-	print "Hello"
+	Error: syntax error Line 8
 
-	
 if  a > b:
-	print "Oi"
-
-	
+	"Variavel nao declarada

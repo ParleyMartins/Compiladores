@@ -8,6 +8,8 @@
 	int debugOption;
 	int lineNumber = 1;
 	int scope = 0;
+	int has_error = 0;
+	int second_parse = 0;
 %}
 
 %token PLUS
@@ -93,6 +95,7 @@ Line:
 		printf("\n");
 		indent(scope);
 	}
+	| error 
 	| END { 
 		if(!table){
 			deleteTable(table);
@@ -107,12 +110,14 @@ Expression:
 	| WhileExpression
 	| ForExpression
 	| AttribuitionExpression
-	| DeclarationExpression 
+	| DeclarationExpression
 	;
 
 PrintExpression:
 	PRINT STRING_VALUE {
-		printf("print %s\n", $2);	
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"print %s\n",$2);
+		printf("%s", buffer);	
 	}
 	| PRINT IDENTIFIER {
 		Symbol* variable = findName(table, $2);
@@ -120,7 +125,9 @@ PrintExpression:
 			printf("Variavel nao declarada");
 			return UNDECLARED_VARIABLE;
 		}
-		printf("print %s", $2);
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"print %s\n",$2);
+		printf("%s", buffer);
 	}
 	;
 
@@ -339,9 +346,9 @@ Operator:
 %%
 
 
-
 int yyerror(char *s) {
-	printf("%s Line %d\n", s, lineNumber);
+	has_error = 1;
+	printf("Error: %s Line %d\n", s, lineNumber);
 }
 
 int main(int argc, char* argv[]) {
@@ -352,5 +359,13 @@ int main(int argc, char* argv[]) {
 			debugOption = 0;
 		}
 	}
-	yyparse();
+	
+	yyparse();	
+	
+	if (has_error == 0) {
+		second_parse = 1;
+		yyparse();
+	} else {
+		system("cat saida.py");
+	}
 }
