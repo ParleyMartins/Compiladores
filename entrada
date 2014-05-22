@@ -1,12 +1,13 @@
 inicio
 
+	escreva "teste"
 	inteiro x <- 4 + 12
-	inteiro a <- (10 - 20)
+	inteiro  <- (10 - 20)
 	inteiro b <- (39 * (23/2))
 	para x de 2 ate 5
-		escreva "Hello"
+		print "Hello"
 	fim_para
 	se a>b entao
-		escreva "Oi"
+		escreva "Oi
 	fim_se
 fim

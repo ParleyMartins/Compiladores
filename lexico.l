@@ -91,6 +91,4 @@ identifier {letter}(_|{letter}|{digit})*
 
 %%
 
-yywrap () {
-	return 0;
-}
+
