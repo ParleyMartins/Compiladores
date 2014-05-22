@@ -2,12 +2,14 @@
 
 EXEC=/home/parley/Repositorio/Compiladores/prog
 
-if [ -f $EXEC ]; then
-	echo ""
-else
-	make
-fi
 
-./prog <entrada >saida.py
+
+#if [ -f $EXEC ]; then
+#	echo ""
+#else
+make 
+#fi
+
+$EXEC <entrada >saida.py
 
 echo "Compilacao realizada com sucesso"

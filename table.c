@@ -171,10 +171,10 @@ void debugMessages(const Table* table, const char* message){
 	}
 }
 
-void indent(int scope){
+void indent(int scope, int secondParse){
 	int i;
 	for(i=0;i<scope;i++){
-		printf("\t");
+		printCode("\t", secondParse);
 	}
 }
 

@@ -88,19 +88,18 @@ Line:
 				"main", "", "int", scope);
 		table = createTable(main, debugOption);
 
-		printf("#!/usr/bin/env python\n");
+		printCode("#!/usr/bin/env python\n", second_parse);
 	}
 	| Expression {
 		printTable(table);
-		printf("\n");
-		indent(scope);
+		printCode("\n", second_parse);
+		indent(scope, second_parse);
 	}
 	| error 
 	| END { 
 		if(!table){
 			deleteTable(table);
 		}
-		exit(EXIT_SUCCESS); 
 	}
 	;
 
@@ -117,27 +116,29 @@ PrintExpression:
 	PRINT STRING_VALUE {
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"print %s\n",$2);
-		printf("%s", buffer);	
+		printCode(buffer, second_parse);	
 	}
 	| PRINT IDENTIFIER {
 		Symbol* variable = findName(table, $2);
 		if(variable == NULL){
-			printf("Variavel nao declarada");
+			printf("Error: Variavel %s nao declarada", $2);
 			return UNDECLARED_VARIABLE;
 		}
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"print %s\n",$2);
-		printf("%s", buffer);
+		printCode(buffer, second_parse);
 	}
 	;
 
 IfExpression:
 	IF BoolComparasion THEN {
-		printf("if  %s:", $2);
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"if  %s:", $2);
+		printCode(buffer, second_parse);
 		scope++; 
 	}
 	| ELSE {
-		printf("else:");			
+		printCode("else:", second_parse);			
 	}
 	| END_IF {
 		scope--;
@@ -204,7 +205,9 @@ BinaryOperator:
 
 WhileExpression:
 	WHILE BoolComparasion {
-		printf("while  %s:", $2);
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"while  %s:", $2);
+		printCode(buffer, second_parse);
 		scope++;
 	}
 	| END_WHILE {
@@ -214,11 +217,15 @@ WhileExpression:
 	
 ForExpression:
 	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
-		printf("for %s in range(%s , %s, %s):", $2, $4, $6, $8);
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"for %s in range(%s , %s, %s):", $2, $4, $6, $8);
+		printCode(buffer, second_parse);
 		scope++;
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
-		printf("for %s in range(%s , %s):", $2, $4, $6);
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"for %s in range(%s , %s):", $2, $4, $6);
+		printCode(buffer, second_parse);
 		scope++;
 	}
 	| END_FOR {
@@ -238,7 +245,9 @@ NumberOrIdentifier:
 AttribuitionExpression:
 	IDENTIFIER RECEIVES AttribuitionValue {
 		setVariable(table, $1, $3);
-		printf("%s = %s", $1, $3);
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"%s = %s", $1, $3);
+		printCode(buffer, second_parse);
 	}
 	;
 
@@ -266,8 +275,10 @@ DeclarationExpression:
 		//checkError(errorCode, $1);
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
-		insertVariable(table, $1, $2, $4, NULL, scope);			
-		printf("%s = %s", $2, $4);
+		insertVariable(table, $1, $2, $4, NULL, scope);	
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"%s = %s", $2, $4);
+		printCode(buffer, second_parse)
 	}
 	;
 
@@ -318,10 +329,10 @@ MathParam:
 			if(strcmp(val->type,"int")==0){
 				$$ = $1;
 			} else {
-				printf("ERROR! TYPE");
+				printf("Error: TYPE");
 			}
 		} else {
-			printf("ERROR! NULL");
+			printf("Error: NULL");
 		}
 	}
 	| NUMBER {
@@ -364,8 +375,9 @@ int main(int argc, char* argv[]) {
 	
 	if (has_error == 0) {
 		second_parse = 1;
+		fseek(stdin, 0, SEEK_SET);
 		yyparse();
-	} else {
-		system("cat saida.py");
-	}
+	} 
+
+	exit(EXIT_SUCCESS); 
 }
