@@ -95,7 +95,6 @@ Line:
 		printCode("\n", second_parse);
 		indent(scope, second_parse);
 	}
-	| error 
 	| END { 
 		if(!table){
 			deleteTable(table);
@@ -110,6 +109,10 @@ Expression:
 	| ForExpression
 	| AttribuitionExpression
 	| DeclarationExpression
+	| error END_LINE{
+		lineNumber++;
+		yyerrok;
+	}
 	;
 
 PrintExpression:
@@ -381,3 +384,4 @@ int main(int argc, char* argv[]) {
 
 	exit(EXIT_SUCCESS); 
 }
+
