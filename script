@@ -1,15 +1,19 @@
 #!/bin/bash
 
 EXEC=/home/parley/Repositorio/Compiladores/prog
+INPUT=/home/parley/Repositorio/Compiladores/entrada
+OUTPUT=/home/parley/Repositorio/Compiladores/saida.py
 
-
-
-#if [ -f $EXEC ]; then
-#	echo ""
-#else
 make 
-#fi
 
-$EXEC <entrada >saida.py
+$EXEC <$INPUT >$OUTPUT
 
-echo "Compilacao realizada com sucesso"
+for line in $(cat $OUTPUT); do
+	break;
+done
+
+if [ $line = "Error:" ]; then
+	cat $OUTPUT
+else
+	echo "Compilacao realizada com sucesso"
+fi
