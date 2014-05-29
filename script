@@ -1,8 +1,8 @@
 #!/bin/bash
 
-EXEC=/home/parley/Repositorio/Compiladores/prog
-INPUT=/home/parley/Repositorio/Compiladores/entrada
-OUTPUT=/home/parley/Repositorio/Compiladores/saida.py
+EXEC=./prog
+INPUT=./entrada
+OUTPUT=./saida.py
 
 make 
 

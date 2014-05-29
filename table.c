@@ -69,12 +69,14 @@ void deleteTable(Table* table, int scope){
 		} else {
 			break;
 		}
+		break;
 	}
 	temp = 0;
 	if(scope == 0){
 		table->head = 0;
 		table->tail = 0;
 		table = 0;
+		free(table);
 	}
 }
 

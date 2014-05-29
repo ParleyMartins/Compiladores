@@ -47,4 +47,5 @@ void debugMessages(const Table* table, const char* message);
 
 void printCode(char* code, int secondParse);
 
+
 #endif

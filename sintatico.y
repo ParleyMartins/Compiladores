@@ -70,9 +70,19 @@
 %token TRUE
 %token FALSE
 
-%start Input
+%start StartExpression
 
 %%
+
+StartExpression:
+	START {
+		Symbol* main = createSymbol(NULL, "void",
+				"main", "", "int", scope);
+		table = createTable(main, debugOption);
+
+		printCode("#!/usr/bin/env python\n\n", second_parse);
+	} Input
+	;
 
 Input:
 	/* Empty Line */
@@ -83,21 +93,24 @@ Line:
 	END_LINE {
 		lineNumber++;
 	}
-	| START {
-		Symbol* main = createSymbol(NULL, "void",
-				"main", "", "int", scope);
-		table = createTable(main, debugOption);
-
-		printCode("#!/usr/bin/env python\n", second_parse);
-	}
 	| Expression {
 		printTable(table);
 		printCode("\n", second_parse);
 		indent(scope, second_parse);
 	}
 	| END { 
-		if(!table){
-			deleteTable(table);
+		if(table != NULL){
+			deleteTable(table, scope);
+			printTable(table);
+		} else {
+			printTable(table);
+		}
+		if (table->head != NULL){
+			printf("Error: Finalize uma das estruturas\n");
+			scope--;
+			deleteTable(table, scope);
+			printTable(table);
+			has_error = 1;
 		}
 	}
 	;
@@ -118,17 +131,17 @@ Expression:
 PrintExpression:
 	PRINT STRING_VALUE {
 		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"print %s\n",$2);
+		sprintf(buffer,"print %s",$2);
 		printCode(buffer, second_parse);	
 	}
 	| PRINT IDENTIFIER {
 		Symbol* variable = findName(table, $2);
 		if(variable == NULL){
-			printf("Error: Variavel %s nao declarada", $2);
-			return UNDECLARED_VARIABLE;
+			printf("Error: Variavel %s nao declarada\n", $2);
+			has_error = 1;
 		}
 		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"print %s\n",$2);
+		sprintf(buffer,"print %s",$2);
 		printCode(buffer, second_parse);
 	}
 	;
@@ -139,12 +152,15 @@ IfExpression:
 		sprintf(buffer,"if  %s:", $2);
 		printCode(buffer, second_parse);
 		scope++; 
+		insertVariable(table, "function", "if", NULL, NULL, scope);
 	}
 	| ELSE {
 		printCode("else:", second_parse);			
 	}
 	| END_IF {
+		deleteTable(table, scope);
 		scope--;
+		printTable(table);
 	}
 	;
 
@@ -164,7 +180,7 @@ BoolComparasion:
 	;
 	
 BoolExpression:
-	IDENTIFIER LogicalComparer IDENTIFIER {
+	NumberOrIdentifier LogicalComparer NumberOrIdentifier {
 		char *str = (char *) malloc (sizeof(char));
 		strcpy(str, $1);
 		strcat(str, " ");
@@ -212,9 +228,12 @@ WhileExpression:
 		sprintf(buffer,"while  %s:", $2);
 		printCode(buffer, second_parse);
 		scope++;
+		insertVariable(table, "function", "while", NULL, NULL, scope);
 	}
 	| END_WHILE {
-		scope--; 	
+		deleteTable(table, scope);
+		scope--;
+		printTable(table);
 	}
 	;
 	
@@ -224,15 +243,19 @@ ForExpression:
 		sprintf(buffer,"for %s in range(%s , %s, %s):", $2, $4, $6, $8);
 		printCode(buffer, second_parse);
 		scope++;
+		insertVariable(table, "function", "for", NULL, NULL, scope);
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"for %s in range(%s , %s):", $2, $4, $6);
 		printCode(buffer, second_parse);
 		scope++;
+		insertVariable(table, "function", "for", NULL, NULL, scope);
 	}
 	| END_FOR {
+		deleteTable(table, scope);
 		scope--;
+		printTable(table);
 	}
 	;
 
@@ -317,9 +340,7 @@ MathExpression:
 	| OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS {
 		char *str = (char *) malloc (sizeof(char));
 		strcpy(str, "(");
-		strcat(str, " ");
 		strcat(str, $2);
-		strcat(str, " ");
 		strcat(str, ")");
 		$$ = str;
 	}
@@ -332,10 +353,10 @@ MathParam:
 			if(strcmp(val->type,"int")==0){
 				$$ = $1;
 			} else {
-				printf("Error: TYPE");
+				printf("Error: Variavel inteira");
 			}
 		} else {
-			printf("Error: NULL");
+			printf("Error: Variavel não declarada ou valor não declarado");
 		}
 	}
 	| NUMBER {
@@ -359,7 +380,6 @@ Operator:
 	;
 %%
 
-
 int yyerror(char *s) {
 	has_error = 1;
 	printf("Error: %s Line %d\n", s, lineNumber);
@@ -373,8 +393,19 @@ int main(int argc, char* argv[]) {
 			debugOption = 0;
 		}
 	}
-	
+	table = calloc(1, sizeof(Table));
 	yyparse();	
+
+	if (table->head != NULL){
+		printTable(table);
+		printf("Error: Linha: %d, comando \"fim\" esperado. \n", lineNumber);
+		has_error = 1;
+		deleteTable(table, 0);
+		printTable(table);
+	}
+	else{
+		printTable(table);
+	}
 	
 	if (has_error == 0) {
 		second_parse = 1;
