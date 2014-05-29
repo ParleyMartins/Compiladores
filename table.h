@@ -29,7 +29,7 @@ Symbol* createSymbol(Symbol* prev, char* type, char* name,
 void insertSymbol(Table* table, Symbol* symbol);
 
 void deleteSymbol(Symbol* symbol);
-void deleteTable(Table* table);
+void deleteTable(Table* table, int scope);
 
 Symbol* findName (const Table* table, const char* name);
 
