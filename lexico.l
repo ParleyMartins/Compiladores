@@ -10,7 +10,8 @@ white [ \t]+
 letter [a-zA-Z]
 digit [0-9]
 number {digit}+
-string "\""[a-zA-Z0-9 ]*"\""
+symbol ["+"]
+string "\""[a-zA-Z0-9\?\+\!\@\#\$\%\^\&\*\(\)\{\}\[\] ]*"\""
 identifier {letter}(_|{letter}|{digit})*
 
 %%
@@ -64,8 +65,17 @@ identifier {letter}(_|{letter}|{digit})*
 "caractere"	return (CHAR);
 "texto"		return (STRING_TYPE);
 "booleano"	return (BOOL);
-"verdadeiro" 	return (TRUE);
-"falso"		return (FALSE); 
+
+"verdadeiro" {
+			yylval = (char*) malloc( sizeof(char) ); 
+			strcpy(yylval, "true");
+			return (TRUE);
+		}
+"falso"			 {
+			yylval = (char*) malloc( sizeof(char) ); 
+			strcpy(yylval, "false");
+			return (FALSE);
+		} 
 
 
 

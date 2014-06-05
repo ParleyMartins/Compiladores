@@ -1,9 +1,5 @@
 %{
 	#include "global.h"
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include "table.h"
 	Table* table;
 	int debugOption;
 	int lineNumber = 1;
@@ -177,6 +173,29 @@ BoolComparasion:
 	| BoolExpression {
 		$$ = $1;
 	}
+	| TRUE {
+		$$ = $1;	
+	}
+	| FALSE {
+		$$ = $1;	
+	}
+	| IDENTIFIER {
+		Symbol* variable = findName(table, $1);
+		if(variable == NULL){
+			printf("Error: Variavel %s nao declarada\n", $1);
+			has_error = 1;
+		}
+
+		if ( strcmp(variable->type, "bool") != 0) {
+			printf("Error: A variavel %s precisa ser booleana\n", $1);
+			has_error = 1;			
+		} else if (variable->value == NULL) {
+			printf("Error: A variavel %s precisa ser inicializada!\n", $1);
+			has_error = 1;		
+		} else {
+			$$ = variable->name;
+		}
+	}
 	;
 	
 BoolExpression:
@@ -298,13 +317,12 @@ AttribuitionValue:
 DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
-		//checkError(errorCode, $1);
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
 		insertVariable(table, $1, $2, $4, NULL, scope);	
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"%s = %s", $2, $4);
-		printCode(buffer, second_parse)
+		printCode(buffer, second_parse);
 	}
 	;
 
