@@ -64,20 +64,6 @@ identifier {letter}(_|{letter}|{digit})*
 "real"		return (FLOAT);
 "caractere"	return (CHAR);
 "texto"		return (STRING_TYPE);
-"booleano"	return (BOOL);
-
-"verdadeiro" {
-			yylval = (char*) malloc( sizeof(char) ); 
-			strcpy(yylval, "true");
-			return (TRUE);
-		}
-"falso"			 {
-			yylval = (char*) malloc( sizeof(char) ); 
-			strcpy(yylval, "false");
-			return (FALSE);
-		} 
-
-
 
 {identifier}	{
 			yylval = (char*) malloc( sizeof(char) ); 

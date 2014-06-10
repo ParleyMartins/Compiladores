@@ -52,7 +52,6 @@
 %token FLOAT
 %token CHAR
 %token STRING_TYPE
-%token BOOL
 
 %token IDENTIFIER
 %token NUMBER
@@ -62,9 +61,6 @@
 %token END_FOR
 %token END_WHILE
 %token END_FUNCTION
-
-%token TRUE
-%token FALSE
 
 %start StartExpression
 
@@ -118,6 +114,7 @@ Expression:
 	| ForExpression
 	| AttribuitionExpression
 	| DeclarationExpression
+	| ScanExpression
 	| error END_LINE{
 		lineNumber++;
 		yyerrok;
@@ -138,6 +135,19 @@ PrintExpression:
 		}
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"print %s",$2);
+		printCode(buffer, second_parse);
+	}
+	;
+
+ScanExpression:
+	SCAN IDENTIFIER {
+		Symbol* variable = findName(table, $2);
+		if(variable == NULL){
+			printf("Error: Variavel %s nao declarada\n", $2);
+			has_error = 1;
+		}
+		char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"%s = raw_input()\n#A funcao raw_input aceita como argumento a mensagem para o usuario",$2);
 		printCode(buffer, second_parse);
 	}
 	;
@@ -172,29 +182,6 @@ BoolComparasion:
 	}
 	| BoolExpression {
 		$$ = $1;
-	}
-	| TRUE {
-		$$ = $1;	
-	}
-	| FALSE {
-		$$ = $1;	
-	}
-	| IDENTIFIER {
-		Symbol* variable = findName(table, $1);
-		if(variable == NULL){
-			printf("Error: Variavel %s nao declarada\n", $1);
-			has_error = 1;
-		}
-
-		if ( strcmp(variable->type, "bool") != 0) {
-			printf("Error: A variavel %s precisa ser booleana\n", $1);
-			has_error = 1;			
-		} else if (variable->value == NULL) {
-			printf("Error: A variavel %s precisa ser inicializada!\n", $1);
-			has_error = 1;		
-		} else {
-			$$ = variable->name;
-		}
 	}
 	;
 	
@@ -280,7 +267,18 @@ ForExpression:
 
 NumberOrIdentifier:
 	IDENTIFIER {
-		$$ = $1;
+		Symbol* variable = findName(table, $1);
+		if(variable == NULL){
+			printf("Error: Variavel %s nao declarada\n", $1);
+			has_error = 1;
+		}else{	
+			if (variable->value == NULL) {
+				printf("Error: A variavel %s precisa ser inicializada!\n", $1);
+				has_error = 1;		
+			} else {
+				$$ = variable->name;
+			}
+		}
 	}
 	| NUMBER {
 		$$ = $1;
@@ -302,12 +300,6 @@ AttribuitionValue:
 	}
 	| STRING_VALUE {
 		$$ = $1;
-	}
-	| TRUE {
-		$$ = "true";
-	}
-	| FALSE {
-		$$ = "false";
 	}
 	| MathExpression {
 		$$ = $1;
@@ -338,9 +330,6 @@ Type:
 	}
 	| STRING_TYPE {
 		$$ = "string";
-	}
-	| BOOL {
-		$$ = "bool";
 	}
 	;
 

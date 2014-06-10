@@ -1,30 +1,11 @@
 #!/usr/bin/env python
 
-a = 4 + 12
-b = (10 - 20)
+a = 90
+c = 10
+a = raw_input()
+#A funcao raw_input aceita como argumento a mensagem para o usuario
 
-
-
-boo = true
-if  boo:
-	print "testando"
-	
-a = 10
-
-teste = "10+20ads?!@#w [] {}"
-if  true:
-	print "teste"
-	
-c = a + b
-print c
-for x in range(2 , 5):
-	print "Hello"
-	
-while  c > 0:
-	print "While"
-	c = 0
-	
-print c
-if  a > 10:
-	print "Oi"
-	
+print "adsjfasnd"
+b = raw_input()
+#A funcao raw_input aceita como argumento a mensagem para o usuario
+print b
