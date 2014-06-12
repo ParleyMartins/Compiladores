@@ -5,7 +5,7 @@ c = 10
 a = raw_input()
 #A funcao raw_input aceita como argumento a mensagem para o usuario
 
-print "adsjfasnd"
-b = raw_input()
+b = raw_input("adsjfasnd")
+print c
+c = raw_input()
 #A funcao raw_input aceita como argumento a mensagem para o usuario
-print b

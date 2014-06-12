@@ -150,6 +150,17 @@ ScanExpression:
 		sprintf(buffer,"%s = raw_input()\n#A funcao raw_input aceita como argumento a mensagem para o usuario",$2);
 		printCode(buffer, second_parse);
 	}
+	| PRINT STRING_VALUE END_LINE SCAN IDENTIFIER{
+		Symbol* variable = findName(table, $5);
+		if(variable == NULL){
+			printf("Error: Variavel %s nao declarada\n", $5);
+			has_error = 1;
+		}
+		char *buffer = (char*)malloc(sizeof(char));
+		sprintf(buffer,"%s = raw_input(%s)", $5, $2);
+		printCode(buffer, second_parse);
+		lineNumber++;
+	}
 	;
 
 IfExpression:

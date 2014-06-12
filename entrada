@@ -5,10 +5,10 @@ inicio
 	leia a
 
 	texto b
+
 	escreva "adsjfasnd"
 	leia b
 
-	escreva b
+	escreva c
+	leia c
 fim
-
-
