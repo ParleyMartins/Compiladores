@@ -115,6 +115,8 @@ Expression:
 	| AttribuitionExpression
 	| DeclarationExpression
 	| ScanExpression
+	| FunctionExpression
+	| CallingFunctionExpression
 	| error END_LINE{
 		lineNumber++;
 		yyerrok;
@@ -150,16 +152,52 @@ ScanExpression:
 		sprintf(buffer,"%s = raw_input()\n#A funcao raw_input aceita como argumento a mensagem para o usuario",$2);
 		printCode(buffer, second_parse);
 	}
-	| PRINT STRING_VALUE END_LINE SCAN IDENTIFIER{
-		Symbol* variable = findName(table, $5);
-		if(variable == NULL){
-			printf("Error: Variavel %s nao declarada\n", $5);
+	;
+
+FunctionExpression:
+	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS{
+		Symbol* function = findName(table, $2);
+		if(function != NULL){
+			printf("Error: Funcao %s ja declarada\n", $2);
 			has_error = 1;
 		}
 		char *buffer = (char*)malloc(sizeof(char));
-		sprintf(buffer,"%s = raw_input(%s)", $5, $2);
-		printCode(buffer, second_parse);
-		lineNumber++;
+		sprintf(buffer,"def %s(%s):",$2,$4);
+		printCode(buffer,second_parse);
+		scope++;
+		insertVariable(table,"function",$2,NULL,NULL,scope);
+	}
+	| END_FUNCTION {
+		deleteTable(table,scope);
+		scope--;
+		printTable(table);
+	}
+	;
+
+CallingFunctionExpression:
+	IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS{
+		Symbol* function = findName(table, $1);
+		if(function == NULL){
+			printf("Error: Funcao %s nao declarada\n", $1);
+			has_error = 1;
+		}
+	}
+	;
+
+Parameter:
+	{
+		$$ = "";
+	}
+	| DeclarationExpression Parameter{
+		if($1!=NULL){
+			char *str = (char*) malloc (sizeof(char));
+			strcpy(str,$1);
+			if(strcmp($2,"")!=0){
+				strcat(str,", ");
+				strcat(str, $2);
+			}
+			$$ = str;
+		}
 	}
 	;
 
@@ -183,13 +221,13 @@ IfExpression:
 
 BoolComparasion:
 	 BoolExpression BinaryOperator BoolComparasion {
-		char *str2 = (char *) malloc (sizeof(char));
-		strcpy(str2, $1);
-		strcat(str2, " ");
-		strcat(str2, $2);
-		strcat(str2, " ");
-		strcat(str2, $3);
-		$$ = str2;
+		char *str = (char *) malloc (sizeof(char));
+		strcpy(str, $1);
+		strcat(str, " ");
+		strcat(str, $2);
+		strcat(str, " ");
+		strcat(str, $3);
+		$$ = str;
 	}
 	| BoolExpression {
 		$$ = $1;
@@ -207,7 +245,6 @@ BoolExpression:
 		$$ = str;
 	}
 	;
-
 
 LogicalComparer:
 	LESS_THAN {
@@ -320,6 +357,7 @@ AttribuitionValue:
 DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
+		$$ = $2;
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
 		insertVariable(table, $1, $2, $4, NULL, scope);	

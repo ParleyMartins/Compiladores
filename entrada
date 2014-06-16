@@ -1,14 +1,15 @@
 inicio
-	inteiro a <- 90
-	inteiro c <-10
+	inteiro a <- 10
+	inteiro b 
+	funcao matematica ()
+		se 1>2 entao
+			escreva a
+		fim_se
+	fim_funcao
 
-	leia a
+	funcao oi(inteiro a inteiro b)
+		escreva "ijaijdai"
+	fim_funcao
 
-	texto b
-
-	escreva "adsjfasnd"
 	leia b
-
-	escreva c
-	leia c
 fim
