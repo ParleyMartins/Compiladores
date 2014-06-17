@@ -1,21 +1,15 @@
 inicio
-	inteiro a <- 4 + 12
-	inteiro b <- (10 - 20)
-	inteiro c <- 3
+	inteiro a <- 10
+	inteiro b 
+	funcao matematica ()
+		se 1>2 entao
+			escreva a
+		fim_se
+	fim_funcao
 
-	para x de 2 ate 5
-		escreva "Hello"
-	fim_para
-	
-	enquanto c>0 
-		escreva "While"
-		c <- 0
-	fim_enquanto
+	funcao oi(inteiro a inteiro b)
+		escreva "ijaijdai"
+	fim_funcao
 
-	escreva c
-
-	se a>10 entao
-		escreva "Oi"
-	fim_se
-
+	leia b
 fim

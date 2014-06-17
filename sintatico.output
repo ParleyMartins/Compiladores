@@ -1,1003 +1,1097 @@
-
-
-Terminals which are not used:
+Terminals unused in grammar
 
    POWER
    NOT
-   FUNCTION
-   SCAN
-   END_FUNCTION
 
 
-State 56 contains 18 reduce/reduce conflicts.
-State 77 contains 4 shift/reduce conflicts.
+State 69 conflicts: 21 reduce/reduce
+State 92 conflicts: 4 shift/reduce
+
 
 Grammar
-rule 1    @1 ->		/* empty */
-rule 2    StartExpression -> START @1 Input
-rule 3    Input ->		/* empty */
-rule 4    Input -> Input Line
-rule 5    Line -> END_LINE
-rule 6    Line -> Expression
-rule 7    Line -> END
-rule 8    Expression -> PrintExpression
-rule 9    Expression -> IfExpression
-rule 10   Expression -> WhileExpression
-rule 11   Expression -> ForExpression
-rule 12   Expression -> AttribuitionExpression
-rule 13   Expression -> DeclarationExpression
-rule 14   Expression -> error END_LINE
-rule 15   PrintExpression -> PRINT STRING_VALUE
-rule 16   PrintExpression -> PRINT IDENTIFIER
-rule 17   IfExpression -> IF BoolComparasion THEN
-rule 18   IfExpression -> ELSE
-rule 19   IfExpression -> END_IF
-rule 20   BoolComparasion -> BoolExpression BinaryOperator BoolComparasion
-rule 21   BoolComparasion -> BoolExpression
-rule 22   BoolExpression -> NumberOrIdentifier LogicalComparer NumberOrIdentifier
-rule 23   LogicalComparer -> LESS_THAN
-rule 24   LogicalComparer -> GREATER_THAN
-rule 25   LogicalComparer -> LESS_OR_EQUAL
-rule 26   LogicalComparer -> GREATER_OR_EQUAL
-rule 27   LogicalComparer -> DIFFERENT
-rule 28   LogicalComparer -> EQUAL
-rule 29   BinaryOperator -> AND
-rule 30   BinaryOperator -> OR
-rule 31   WhileExpression -> WHILE BoolComparasion
-rule 32   WhileExpression -> END_WHILE
-rule 33   ForExpression -> FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER
-rule 34   ForExpression -> FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier
-rule 35   ForExpression -> END_FOR
-rule 36   NumberOrIdentifier -> IDENTIFIER
-rule 37   NumberOrIdentifier -> NUMBER
-rule 38   AttribuitionExpression -> IDENTIFIER RECEIVES AttribuitionValue
-rule 39   AttribuitionValue -> NUMBER
-rule 40   AttribuitionValue -> STRING_VALUE
-rule 41   AttribuitionValue -> TRUE
-rule 42   AttribuitionValue -> FALSE
-rule 43   AttribuitionValue -> MathExpression
-rule 44   DeclarationExpression -> Type IDENTIFIER
-rule 45   DeclarationExpression -> Type IDENTIFIER RECEIVES AttribuitionValue
-rule 46   Type -> INT
-rule 47   Type -> FLOAT
-rule 48   Type -> CHAR
-rule 49   Type -> STRING_TYPE
-rule 50   Type -> BOOL
-rule 51   MathExpression -> MathParam
-rule 52   MathExpression -> MathExpression Operator MathExpression
-rule 53   MathExpression -> OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS
-rule 54   MathParam -> IDENTIFIER
-rule 55   MathParam -> NUMBER
-rule 56   Operator -> PLUS
-rule 57   Operator -> MINUS
-rule 58   Operator -> DIVIDE
-rule 59   Operator -> TIMES
+
+    0 $accept: StartExpression $end
+
+    1 $@1: /* empty */
+
+    2 StartExpression: START $@1 Input
+
+    3 Input: /* empty */
+    4      | Input Line
+
+    5 Line: END_LINE
+    6     | Expression
+    7     | END
+
+    8 Expression: PrintExpression
+    9           | IfExpression
+   10           | WhileExpression
+   11           | ForExpression
+   12           | AttribuitionExpression
+   13           | DeclarationExpression
+   14           | ScanExpression
+   15           | FunctionExpression
+   16           | CallingFunctionExpression
+   17           | error END_LINE
+
+   18 PrintExpression: PRINT STRING_VALUE
+   19                | PRINT IDENTIFIER
+
+   20 ScanExpression: SCAN IDENTIFIER
+
+   21 FunctionExpression: FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS
+   22                   | END_FUNCTION
+
+   23 CallingFunctionExpression: IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS
+
+   24 Parameter: /* empty */
+   25          | DeclarationExpression Parameter
+
+   26 IfExpression: IF BoolComparasion THEN
+   27             | ELSE
+   28             | END_IF
+
+   29 BoolComparasion: BoolExpression BinaryOperator BoolComparasion
+   30                | BoolExpression
+
+   31 BoolExpression: NumberOrIdentifier LogicalComparer NumberOrIdentifier
+
+   32 LogicalComparer: LESS_THAN
+   33                | GREATER_THAN
+   34                | LESS_OR_EQUAL
+   35                | GREATER_OR_EQUAL
+   36                | DIFFERENT
+   37                | EQUAL
+
+   38 BinaryOperator: AND
+   39               | OR
+
+   40 WhileExpression: WHILE BoolComparasion
+   41                | END_WHILE
+
+   42 ForExpression: FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER
+   43              | FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier
+   44              | END_FOR
+
+   45 NumberOrIdentifier: IDENTIFIER
+   46                   | NUMBER
+
+   47 AttribuitionExpression: IDENTIFIER RECEIVES AttribuitionValue
+
+   48 AttribuitionValue: NUMBER
+   49                  | STRING_VALUE
+   50                  | MathExpression
+
+   51 DeclarationExpression: Type IDENTIFIER
+   52                      | Type IDENTIFIER RECEIVES AttribuitionValue
+
+   53 Type: INT
+   54     | FLOAT
+   55     | CHAR
+   56     | STRING_TYPE
+
+   57 MathExpression: MathParam
+   58               | MathExpression Operator MathExpression
+   59               | OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS
+
+   60 MathParam: IDENTIFIER
+   61          | NUMBER
+
+   62 Operator: PLUS
+   63         | MINUS
+   64         | DIVIDE
+   65         | TIMES
+
 
 Terminals, with rules where they appear
 
-$ (-1)
-error (256) 14
-PLUS (258) 56
-MINUS (259) 57
-TIMES (260) 59
-DIVIDE (261) 58
+$end (0) 0
+error (256) 17
+PLUS (258) 62
+MINUS (259) 63
+TIMES (260) 65
+DIVIDE (261) 64
 POWER (262)
-LESS_THAN (263) 23
-GREATER_THAN (264) 24
-LESS_OR_EQUAL (265) 25
-GREATER_OR_EQUAL (266) 26
-OPEN_PARENTHESIS (267) 53
-CLOSE_PARENTHESIS (268) 53
-DIFFERENT (269) 27
-EQUAL (270) 28
-RECEIVES (271) 38 45
-AND (272) 29
-OR (273) 30
+LESS_THAN (263) 32
+GREATER_THAN (264) 33
+LESS_OR_EQUAL (265) 34
+GREATER_OR_EQUAL (266) 35
+OPEN_PARENTHESIS (267) 21 23 59
+CLOSE_PARENTHESIS (268) 21 23 59
+DIFFERENT (269) 36
+EQUAL (270) 37
+RECEIVES (271) 47 52
+AND (272) 38
+OR (273) 39
 NOT (274)
-END_LINE (275) 5 14
+END_LINE (275) 5 17
 START (276) 2
 END (277) 7
-IF (278) 17
-THEN (279) 17
-ELSE (280) 18
-FOR (281) 33 34
-WHILE (282) 31
-FUNCTION (283)
-FROM (284) 33 34
-TO (285) 33 34
-STEP (286) 33
-PRINT (287) 15 16
-SCAN (288)
-INT (289) 46
-FLOAT (290) 47
-CHAR (291) 48
-STRING_TYPE (292) 49
-BOOL (293) 50
-IDENTIFIER (294) 16 33 34 36 38 44 45 54
-NUMBER (295) 33 37 39 55
-STRING_VALUE (296) 15 40
-END_IF (297) 19
-END_FOR (298) 35
-END_WHILE (299) 32
-END_FUNCTION (300)
-TRUE (301) 41
-FALSE (302) 42
+IF (278) 26
+THEN (279) 26
+ELSE (280) 27
+FOR (281) 42 43
+WHILE (282) 40
+FUNCTION (283) 21
+FROM (284) 42 43
+TO (285) 42 43
+STEP (286) 42
+PRINT (287) 18 19
+SCAN (288) 20
+INT (289) 53
+FLOAT (290) 54
+CHAR (291) 55
+STRING_TYPE (292) 56
+IDENTIFIER (293) 19 20 21 23 42 43 45 47 51 52 60
+NUMBER (294) 42 46 48 61
+STRING_VALUE (295) 18 49
+END_IF (296) 28
+END_FOR (297) 44
+END_WHILE (298) 41
+END_FUNCTION (299) 22
+
 
 Nonterminals, with rules where they appear
 
-StartExpression (48)
-    on left: 2
-@1 (49)
+$accept (45)
+    on left: 0
+StartExpression (46)
+    on left: 2, on right: 0
+$@1 (47)
     on left: 1, on right: 2
-Input (50)
+Input (48)
     on left: 3 4, on right: 2 4
-Line (51)
+Line (49)
     on left: 5 6 7, on right: 4
-Expression (52)
-    on left: 8 9 10 11 12 13 14, on right: 6
-PrintExpression (53)
-    on left: 15 16, on right: 8
-IfExpression (54)
-    on left: 17 18 19, on right: 9
-BoolComparasion (55)
-    on left: 20 21, on right: 17 20 31
-BoolExpression (56)
-    on left: 22, on right: 20 21
-LogicalComparer (57)
-    on left: 23 24 25 26 27 28, on right: 22
-BinaryOperator (58)
-    on left: 29 30, on right: 20
-WhileExpression (59)
-    on left: 31 32, on right: 10
-ForExpression (60)
-    on left: 33 34 35, on right: 11
-NumberOrIdentifier (61)
-    on left: 36 37, on right: 22 33 34
-AttribuitionExpression (62)
-    on left: 38, on right: 12
-AttribuitionValue (63)
-    on left: 39 40 41 42 43, on right: 38 45
-DeclarationExpression (64)
-    on left: 44 45, on right: 13
-Type (65)
-    on left: 46 47 48 49 50, on right: 44 45
-MathExpression (66)
-    on left: 51 52 53, on right: 43 52 53
-MathParam (67)
-    on left: 54 55, on right: 51
-Operator (68)
-    on left: 56 57 58 59, on right: 52
+Expression (50)
+    on left: 8 9 10 11 12 13 14 15 16 17, on right: 6
+PrintExpression (51)
+    on left: 18 19, on right: 8
+ScanExpression (52)
+    on left: 20, on right: 14
+FunctionExpression (53)
+    on left: 21 22, on right: 15
+CallingFunctionExpression (54)
+    on left: 23, on right: 16
+Parameter (55)
+    on left: 24 25, on right: 21 23 25
+IfExpression (56)
+    on left: 26 27 28, on right: 9
+BoolComparasion (57)
+    on left: 29 30, on right: 26 29 40
+BoolExpression (58)
+    on left: 31, on right: 29 30
+LogicalComparer (59)
+    on left: 32 33 34 35 36 37, on right: 31
+BinaryOperator (60)
+    on left: 38 39, on right: 29
+WhileExpression (61)
+    on left: 40 41, on right: 10
+ForExpression (62)
+    on left: 42 43 44, on right: 11
+NumberOrIdentifier (63)
+    on left: 45 46, on right: 31 42 43
+AttribuitionExpression (64)
+    on left: 47, on right: 12
+AttribuitionValue (65)
+    on left: 48 49 50, on right: 47 52
+DeclarationExpression (66)
+    on left: 51 52, on right: 13 25
+Type (67)
+    on left: 53 54 55 56, on right: 51 52
+MathExpression (68)
+    on left: 57 58 59, on right: 50 58 59
+MathParam (69)
+    on left: 60 61, on right: 57
+Operator (70)
+    on left: 62 63 64 65, on right: 58
 
 
 state 0
 
-    START	shift, and go to state 1
+    0 $accept: . StartExpression $end
 
-    StartExpression	go to state 81
+    START  shift, and go to state 1
 
+    StartExpression  go to state 2
 
 
 state 1
 
-    StartExpression  ->  START . @1 Input   (rule 2)
+    2 StartExpression: START . $@1 Input
 
-    $default	reduce using rule 1 (@1)
+    $default  reduce using rule 1 ($@1)
 
-    @1  	go to state 2
-
+    $@1  go to state 3
 
 
 state 2
 
-    StartExpression  ->  START @1 . Input   (rule 2)
+    0 $accept: StartExpression . $end
 
-    $default	reduce using rule 3 (Input)
-
-    Input	go to state 3
-
+    $end  shift, and go to state 4
 
 
 state 3
 
-    StartExpression  ->  START @1 Input .   (rule 2)
-    Input  ->  Input . Line   (rule 4)
+    2 StartExpression: START $@1 . Input
 
-    error	shift, and go to state 4
-    END_LINE	shift, and go to state 5
-    END 	shift, and go to state 6
-    IF  	shift, and go to state 7
-    ELSE	shift, and go to state 8
-    FOR 	shift, and go to state 9
-    WHILE	shift, and go to state 10
-    PRINT	shift, and go to state 11
-    INT 	shift, and go to state 12
-    FLOAT	shift, and go to state 13
-    CHAR	shift, and go to state 14
-    STRING_TYPE	shift, and go to state 15
-    BOOL	shift, and go to state 16
-    IDENTIFIER	shift, and go to state 17
-    END_IF	shift, and go to state 18
-    END_FOR	shift, and go to state 19
-    END_WHILE	shift, and go to state 20
+    $default  reduce using rule 3 (Input)
 
-    $   	reduce using rule 2 (StartExpression)
-    PRINT	[reduce using rule 2 (StartExpression)]
-
-    Line	go to state 21
-    Expression	go to state 22
-    PrintExpression	go to state 23
-    IfExpression	go to state 24
-    WhileExpression	go to state 25
-    ForExpression	go to state 26
-    AttribuitionExpression	go to state 27
-    DeclarationExpression	go to state 28
-    Type	go to state 29
-
+    Input  go to state 5
 
 
 state 4
 
-    Expression  ->  error . END_LINE   (rule 14)
+    0 $accept: StartExpression $end .
 
-    END_LINE	shift, and go to state 30
-
+    $default  accept
 
 
 state 5
 
-    Line  ->  END_LINE .   (rule 5)
+    2 StartExpression: START $@1 Input .
+    4 Input: Input . Line
 
-    $default	reduce using rule 5 (Line)
+    error         shift, and go to state 6
+    END_LINE      shift, and go to state 7
+    END           shift, and go to state 8
+    IF            shift, and go to state 9
+    ELSE          shift, and go to state 10
+    FOR           shift, and go to state 11
+    WHILE         shift, and go to state 12
+    FUNCTION      shift, and go to state 13
+    PRINT         shift, and go to state 14
+    SCAN          shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    CHAR          shift, and go to state 18
+    STRING_TYPE   shift, and go to state 19
+    IDENTIFIER    shift, and go to state 20
+    END_IF        shift, and go to state 21
+    END_FOR       shift, and go to state 22
+    END_WHILE     shift, and go to state 23
+    END_FUNCTION  shift, and go to state 24
 
+    $end  reduce using rule 2 (StartExpression)
+
+    Line                       go to state 25
+    Expression                 go to state 26
+    PrintExpression            go to state 27
+    ScanExpression             go to state 28
+    FunctionExpression         go to state 29
+    CallingFunctionExpression  go to state 30
+    IfExpression               go to state 31
+    WhileExpression            go to state 32
+    ForExpression              go to state 33
+    AttribuitionExpression     go to state 34
+    DeclarationExpression      go to state 35
+    Type                       go to state 36
 
 
 state 6
 
-    Line  ->  END .   (rule 7)
+   17 Expression: error . END_LINE
 
-    $default	reduce using rule 7 (Line)
-
+    END_LINE  shift, and go to state 37
 
 
 state 7
 
-    IfExpression  ->  IF . BoolComparasion THEN   (rule 17)
+    5 Line: END_LINE .
 
-    IDENTIFIER	shift, and go to state 31
-    NUMBER	shift, and go to state 32
-
-    BoolComparasion	go to state 33
-    BoolExpression	go to state 34
-    NumberOrIdentifier	go to state 35
-
+    $default  reduce using rule 5 (Line)
 
 
 state 8
 
-    IfExpression  ->  ELSE .   (rule 18)
+    7 Line: END .
 
-    $default	reduce using rule 18 (IfExpression)
-
+    $default  reduce using rule 7 (Line)
 
 
 state 9
 
-    ForExpression  ->  FOR . IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER   (rule 33)
-    ForExpression  ->  FOR . IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier   (rule 34)
+   26 IfExpression: IF . BoolComparasion THEN
 
-    IDENTIFIER	shift, and go to state 36
+    IDENTIFIER  shift, and go to state 38
+    NUMBER      shift, and go to state 39
 
+    BoolComparasion     go to state 40
+    BoolExpression      go to state 41
+    NumberOrIdentifier  go to state 42
 
 
 state 10
 
-    WhileExpression  ->  WHILE . BoolComparasion   (rule 31)
+   27 IfExpression: ELSE .
 
-    IDENTIFIER	shift, and go to state 31
-    NUMBER	shift, and go to state 32
-
-    BoolComparasion	go to state 37
-    BoolExpression	go to state 34
-    NumberOrIdentifier	go to state 35
-
+    $default  reduce using rule 27 (IfExpression)
 
 
 state 11
 
-    PrintExpression  ->  PRINT . STRING_VALUE   (rule 15)
-    PrintExpression  ->  PRINT . IDENTIFIER   (rule 16)
+   42 ForExpression: FOR . IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER
+   43              | FOR . IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier
 
-    IDENTIFIER	shift, and go to state 38
-    STRING_VALUE	shift, and go to state 39
-
+    IDENTIFIER  shift, and go to state 43
 
 
 state 12
 
-    Type  ->  INT .   (rule 46)
+   40 WhileExpression: WHILE . BoolComparasion
 
-    $default	reduce using rule 46 (Type)
+    IDENTIFIER  shift, and go to state 38
+    NUMBER      shift, and go to state 39
 
+    BoolComparasion     go to state 44
+    BoolExpression      go to state 41
+    NumberOrIdentifier  go to state 42
 
 
 state 13
 
-    Type  ->  FLOAT .   (rule 47)
+   21 FunctionExpression: FUNCTION . IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS
 
-    $default	reduce using rule 47 (Type)
-
+    IDENTIFIER  shift, and go to state 45
 
 
 state 14
 
-    Type  ->  CHAR .   (rule 48)
+   18 PrintExpression: PRINT . STRING_VALUE
+   19                | PRINT . IDENTIFIER
 
-    $default	reduce using rule 48 (Type)
-
+    IDENTIFIER    shift, and go to state 46
+    STRING_VALUE  shift, and go to state 47
 
 
 state 15
 
-    Type  ->  STRING_TYPE .   (rule 49)
+   20 ScanExpression: SCAN . IDENTIFIER
 
-    $default	reduce using rule 49 (Type)
-
+    IDENTIFIER  shift, and go to state 48
 
 
 state 16
 
-    Type  ->  BOOL .   (rule 50)
+   53 Type: INT .
 
-    $default	reduce using rule 50 (Type)
-
+    $default  reduce using rule 53 (Type)
 
 
 state 17
 
-    AttribuitionExpression  ->  IDENTIFIER . RECEIVES AttribuitionValue   (rule 38)
+   54 Type: FLOAT .
 
-    RECEIVES	shift, and go to state 40
-
+    $default  reduce using rule 54 (Type)
 
 
 state 18
 
-    IfExpression  ->  END_IF .   (rule 19)
+   55 Type: CHAR .
 
-    $default	reduce using rule 19 (IfExpression)
-
+    $default  reduce using rule 55 (Type)
 
 
 state 19
 
-    ForExpression  ->  END_FOR .   (rule 35)
+   56 Type: STRING_TYPE .
 
-    $default	reduce using rule 35 (ForExpression)
-
+    $default  reduce using rule 56 (Type)
 
 
 state 20
 
-    WhileExpression  ->  END_WHILE .   (rule 32)
+   23 CallingFunctionExpression: IDENTIFIER . OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS
+   47 AttribuitionExpression: IDENTIFIER . RECEIVES AttribuitionValue
 
-    $default	reduce using rule 32 (WhileExpression)
-
+    OPEN_PARENTHESIS  shift, and go to state 49
+    RECEIVES          shift, and go to state 50
 
 
 state 21
 
-    Input  ->  Input Line .   (rule 4)
+   28 IfExpression: END_IF .
 
-    $default	reduce using rule 4 (Input)
-
+    $default  reduce using rule 28 (IfExpression)
 
 
 state 22
 
-    Line  ->  Expression .   (rule 6)
+   44 ForExpression: END_FOR .
 
-    $default	reduce using rule 6 (Line)
-
+    $default  reduce using rule 44 (ForExpression)
 
 
 state 23
 
-    Expression  ->  PrintExpression .   (rule 8)
+   41 WhileExpression: END_WHILE .
 
-    $default	reduce using rule 8 (Expression)
-
+    $default  reduce using rule 41 (WhileExpression)
 
 
 state 24
 
-    Expression  ->  IfExpression .   (rule 9)
+   22 FunctionExpression: END_FUNCTION .
 
-    $default	reduce using rule 9 (Expression)
-
+    $default  reduce using rule 22 (FunctionExpression)
 
 
 state 25
 
-    Expression  ->  WhileExpression .   (rule 10)
+    4 Input: Input Line .
 
-    $default	reduce using rule 10 (Expression)
-
+    $default  reduce using rule 4 (Input)
 
 
 state 26
 
-    Expression  ->  ForExpression .   (rule 11)
+    6 Line: Expression .
 
-    $default	reduce using rule 11 (Expression)
-
+    $default  reduce using rule 6 (Line)
 
 
 state 27
 
-    Expression  ->  AttribuitionExpression .   (rule 12)
+    8 Expression: PrintExpression .
 
-    $default	reduce using rule 12 (Expression)
-
+    $default  reduce using rule 8 (Expression)
 
 
 state 28
 
-    Expression  ->  DeclarationExpression .   (rule 13)
+   14 Expression: ScanExpression .
 
-    $default	reduce using rule 13 (Expression)
-
+    $default  reduce using rule 14 (Expression)
 
 
 state 29
 
-    DeclarationExpression  ->  Type . IDENTIFIER   (rule 44)
-    DeclarationExpression  ->  Type . IDENTIFIER RECEIVES AttribuitionValue   (rule 45)
+   15 Expression: FunctionExpression .
 
-    IDENTIFIER	shift, and go to state 41
-
+    $default  reduce using rule 15 (Expression)
 
 
 state 30
 
-    Expression  ->  error END_LINE .   (rule 14)
+   16 Expression: CallingFunctionExpression .
 
-    $default	reduce using rule 14 (Expression)
-
+    $default  reduce using rule 16 (Expression)
 
 
 state 31
 
-    NumberOrIdentifier  ->  IDENTIFIER .   (rule 36)
+    9 Expression: IfExpression .
 
-    $default	reduce using rule 36 (NumberOrIdentifier)
-
+    $default  reduce using rule 9 (Expression)
 
 
 state 32
 
-    NumberOrIdentifier  ->  NUMBER .   (rule 37)
+   10 Expression: WhileExpression .
 
-    $default	reduce using rule 37 (NumberOrIdentifier)
-
+    $default  reduce using rule 10 (Expression)
 
 
 state 33
 
-    IfExpression  ->  IF BoolComparasion . THEN   (rule 17)
+   11 Expression: ForExpression .
 
-    THEN	shift, and go to state 42
-
+    $default  reduce using rule 11 (Expression)
 
 
 state 34
 
-    BoolComparasion  ->  BoolExpression . BinaryOperator BoolComparasion   (rule 20)
-    BoolComparasion  ->  BoolExpression .   (rule 21)
+   12 Expression: AttribuitionExpression .
 
-    AND 	shift, and go to state 43
-    OR  	shift, and go to state 44
-
-    $default	reduce using rule 21 (BoolComparasion)
-
-    BinaryOperator	go to state 45
-
+    $default  reduce using rule 12 (Expression)
 
 
 state 35
 
-    BoolExpression  ->  NumberOrIdentifier . LogicalComparer NumberOrIdentifier   (rule 22)
+   13 Expression: DeclarationExpression .
 
-    LESS_THAN	shift, and go to state 46
-    GREATER_THAN	shift, and go to state 47
-    LESS_OR_EQUAL	shift, and go to state 48
-    GREATER_OR_EQUAL	shift, and go to state 49
-    DIFFERENT	shift, and go to state 50
-    EQUAL	shift, and go to state 51
-
-    LogicalComparer	go to state 52
-
+    $default  reduce using rule 13 (Expression)
 
 
 state 36
 
-    ForExpression  ->  FOR IDENTIFIER . FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER   (rule 33)
-    ForExpression  ->  FOR IDENTIFIER . FROM NumberOrIdentifier TO NumberOrIdentifier   (rule 34)
+   51 DeclarationExpression: Type . IDENTIFIER
+   52                      | Type . IDENTIFIER RECEIVES AttribuitionValue
 
-    FROM	shift, and go to state 53
-
+    IDENTIFIER  shift, and go to state 51
 
 
 state 37
 
-    WhileExpression  ->  WHILE BoolComparasion .   (rule 31)
+   17 Expression: error END_LINE .
 
-    $default	reduce using rule 31 (WhileExpression)
-
+    $default  reduce using rule 17 (Expression)
 
 
 state 38
 
-    PrintExpression  ->  PRINT IDENTIFIER .   (rule 16)
+   45 NumberOrIdentifier: IDENTIFIER .
 
-    $default	reduce using rule 16 (PrintExpression)
-
+    $default  reduce using rule 45 (NumberOrIdentifier)
 
 
 state 39
 
-    PrintExpression  ->  PRINT STRING_VALUE .   (rule 15)
+   46 NumberOrIdentifier: NUMBER .
 
-    $default	reduce using rule 15 (PrintExpression)
-
+    $default  reduce using rule 46 (NumberOrIdentifier)
 
 
 state 40
 
-    AttribuitionExpression  ->  IDENTIFIER RECEIVES . AttribuitionValue   (rule 38)
+   26 IfExpression: IF BoolComparasion . THEN
 
-    OPEN_PARENTHESIS	shift, and go to state 54
-    IDENTIFIER	shift, and go to state 55
-    NUMBER	shift, and go to state 56
-    STRING_VALUE	shift, and go to state 57
-    TRUE	shift, and go to state 58
-    FALSE	shift, and go to state 59
-
-    AttribuitionValue	go to state 60
-    MathExpression	go to state 61
-    MathParam	go to state 62
-
+    THEN  shift, and go to state 52
 
 
 state 41
 
-    DeclarationExpression  ->  Type IDENTIFIER .   (rule 44)
-    DeclarationExpression  ->  Type IDENTIFIER . RECEIVES AttribuitionValue   (rule 45)
+   29 BoolComparasion: BoolExpression . BinaryOperator BoolComparasion
+   30                | BoolExpression .
 
-    RECEIVES	shift, and go to state 63
+    AND  shift, and go to state 53
+    OR   shift, and go to state 54
 
-    $default	reduce using rule 44 (DeclarationExpression)
+    $default  reduce using rule 30 (BoolComparasion)
 
+    BinaryOperator  go to state 55
 
 
 state 42
 
-    IfExpression  ->  IF BoolComparasion THEN .   (rule 17)
+   31 BoolExpression: NumberOrIdentifier . LogicalComparer NumberOrIdentifier
 
-    $default	reduce using rule 17 (IfExpression)
+    LESS_THAN         shift, and go to state 56
+    GREATER_THAN      shift, and go to state 57
+    LESS_OR_EQUAL     shift, and go to state 58
+    GREATER_OR_EQUAL  shift, and go to state 59
+    DIFFERENT         shift, and go to state 60
+    EQUAL             shift, and go to state 61
 
+    LogicalComparer  go to state 62
 
 
 state 43
 
-    BinaryOperator  ->  AND .   (rule 29)
+   42 ForExpression: FOR IDENTIFIER . FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER
+   43              | FOR IDENTIFIER . FROM NumberOrIdentifier TO NumberOrIdentifier
 
-    $default	reduce using rule 29 (BinaryOperator)
-
+    FROM  shift, and go to state 63
 
 
 state 44
 
-    BinaryOperator  ->  OR .   (rule 30)
+   40 WhileExpression: WHILE BoolComparasion .
 
-    $default	reduce using rule 30 (BinaryOperator)
-
+    $default  reduce using rule 40 (WhileExpression)
 
 
 state 45
 
-    BoolComparasion  ->  BoolExpression BinaryOperator . BoolComparasion   (rule 20)
+   21 FunctionExpression: FUNCTION IDENTIFIER . OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS
 
-    IDENTIFIER	shift, and go to state 31
-    NUMBER	shift, and go to state 32
-
-    BoolComparasion	go to state 64
-    BoolExpression	go to state 34
-    NumberOrIdentifier	go to state 35
-
+    OPEN_PARENTHESIS  shift, and go to state 64
 
 
 state 46
 
-    LogicalComparer  ->  LESS_THAN .   (rule 23)
+   19 PrintExpression: PRINT IDENTIFIER .
 
-    $default	reduce using rule 23 (LogicalComparer)
-
+    $default  reduce using rule 19 (PrintExpression)
 
 
 state 47
 
-    LogicalComparer  ->  GREATER_THAN .   (rule 24)
+   18 PrintExpression: PRINT STRING_VALUE .
 
-    $default	reduce using rule 24 (LogicalComparer)
-
+    $default  reduce using rule 18 (PrintExpression)
 
 
 state 48
 
-    LogicalComparer  ->  LESS_OR_EQUAL .   (rule 25)
+   20 ScanExpression: SCAN IDENTIFIER .
 
-    $default	reduce using rule 25 (LogicalComparer)
-
+    $default  reduce using rule 20 (ScanExpression)
 
 
 state 49
 
-    LogicalComparer  ->  GREATER_OR_EQUAL .   (rule 26)
+   23 CallingFunctionExpression: IDENTIFIER OPEN_PARENTHESIS . Parameter CLOSE_PARENTHESIS
 
-    $default	reduce using rule 26 (LogicalComparer)
+    INT          shift, and go to state 16
+    FLOAT        shift, and go to state 17
+    CHAR         shift, and go to state 18
+    STRING_TYPE  shift, and go to state 19
 
+    $default  reduce using rule 24 (Parameter)
+
+    Parameter              go to state 65
+    DeclarationExpression  go to state 66
+    Type                   go to state 36
 
 
 state 50
 
-    LogicalComparer  ->  DIFFERENT .   (rule 27)
+   47 AttribuitionExpression: IDENTIFIER RECEIVES . AttribuitionValue
 
-    $default	reduce using rule 27 (LogicalComparer)
+    OPEN_PARENTHESIS  shift, and go to state 67
+    IDENTIFIER        shift, and go to state 68
+    NUMBER            shift, and go to state 69
+    STRING_VALUE      shift, and go to state 70
 
+    AttribuitionValue  go to state 71
+    MathExpression     go to state 72
+    MathParam          go to state 73
 
 
 state 51
 
-    LogicalComparer  ->  EQUAL .   (rule 28)
+   51 DeclarationExpression: Type IDENTIFIER .
+   52                      | Type IDENTIFIER . RECEIVES AttribuitionValue
 
-    $default	reduce using rule 28 (LogicalComparer)
+    RECEIVES  shift, and go to state 74
 
+    $default  reduce using rule 51 (DeclarationExpression)
 
 
 state 52
 
-    BoolExpression  ->  NumberOrIdentifier LogicalComparer . NumberOrIdentifier   (rule 22)
+   26 IfExpression: IF BoolComparasion THEN .
 
-    IDENTIFIER	shift, and go to state 31
-    NUMBER	shift, and go to state 32
-
-    NumberOrIdentifier	go to state 65
-
+    $default  reduce using rule 26 (IfExpression)
 
 
 state 53
 
-    ForExpression  ->  FOR IDENTIFIER FROM . NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER   (rule 33)
-    ForExpression  ->  FOR IDENTIFIER FROM . NumberOrIdentifier TO NumberOrIdentifier   (rule 34)
+   38 BinaryOperator: AND .
 
-    IDENTIFIER	shift, and go to state 31
-    NUMBER	shift, and go to state 32
-
-    NumberOrIdentifier	go to state 66
-
+    $default  reduce using rule 38 (BinaryOperator)
 
 
 state 54
 
-    MathExpression  ->  OPEN_PARENTHESIS . MathExpression CLOSE_PARENTHESIS   (rule 53)
+   39 BinaryOperator: OR .
 
-    OPEN_PARENTHESIS	shift, and go to state 54
-    IDENTIFIER	shift, and go to state 55
-    NUMBER	shift, and go to state 67
-
-    MathExpression	go to state 68
-    MathParam	go to state 62
-
+    $default  reduce using rule 39 (BinaryOperator)
 
 
 state 55
 
-    MathParam  ->  IDENTIFIER .   (rule 54)
+   29 BoolComparasion: BoolExpression BinaryOperator . BoolComparasion
 
-    $default	reduce using rule 54 (MathParam)
+    IDENTIFIER  shift, and go to state 38
+    NUMBER      shift, and go to state 39
 
+    BoolComparasion     go to state 75
+    BoolExpression      go to state 41
+    NumberOrIdentifier  go to state 42
 
 
 state 56
 
-    AttribuitionValue  ->  NUMBER .   (rule 39)
-    MathParam  ->  NUMBER .   (rule 55)
+   32 LogicalComparer: LESS_THAN .
 
-    $   	reduce using rule 39 (AttribuitionValue)
-    $   	[reduce using rule 55 (MathParam)]
-    error	reduce using rule 39 (AttribuitionValue)
-    error	[reduce using rule 55 (MathParam)]
-    PLUS	reduce using rule 55 (MathParam)
-    MINUS	reduce using rule 55 (MathParam)
-    TIMES	reduce using rule 55 (MathParam)
-    DIVIDE	reduce using rule 55 (MathParam)
-    END_LINE	reduce using rule 39 (AttribuitionValue)
-    END_LINE	[reduce using rule 55 (MathParam)]
-    END 	reduce using rule 39 (AttribuitionValue)
-    END 	[reduce using rule 55 (MathParam)]
-    IF  	reduce using rule 39 (AttribuitionValue)
-    IF  	[reduce using rule 55 (MathParam)]
-    ELSE	reduce using rule 39 (AttribuitionValue)
-    ELSE	[reduce using rule 55 (MathParam)]
-    FOR 	reduce using rule 39 (AttribuitionValue)
-    FOR 	[reduce using rule 55 (MathParam)]
-    WHILE	reduce using rule 39 (AttribuitionValue)
-    WHILE	[reduce using rule 55 (MathParam)]
-    PRINT	reduce using rule 39 (AttribuitionValue)
-    PRINT	[reduce using rule 55 (MathParam)]
-    SCAN	reduce using rule 39 (AttribuitionValue)
-    SCAN	[reduce using rule 55 (MathParam)]
-    FLOAT	reduce using rule 55 (MathParam)
-    CHAR	reduce using rule 55 (MathParam)
-    STRING_TYPE	reduce using rule 55 (MathParam)
-    BOOL	reduce using rule 55 (MathParam)
-    $default	reduce using rule 39 (AttribuitionValue)
-
+    $default  reduce using rule 32 (LogicalComparer)
 
 
 state 57
 
-    AttribuitionValue  ->  STRING_VALUE .   (rule 40)
+   33 LogicalComparer: GREATER_THAN .
 
-    $default	reduce using rule 40 (AttribuitionValue)
-
+    $default  reduce using rule 33 (LogicalComparer)
 
 
 state 58
 
-    AttribuitionValue  ->  TRUE .   (rule 41)
+   34 LogicalComparer: LESS_OR_EQUAL .
 
-    $default	reduce using rule 41 (AttribuitionValue)
-
+    $default  reduce using rule 34 (LogicalComparer)
 
 
 state 59
 
-    AttribuitionValue  ->  FALSE .   (rule 42)
+   35 LogicalComparer: GREATER_OR_EQUAL .
 
-    $default	reduce using rule 42 (AttribuitionValue)
-
+    $default  reduce using rule 35 (LogicalComparer)
 
 
 state 60
 
-    AttribuitionExpression  ->  IDENTIFIER RECEIVES AttribuitionValue .   (rule 38)
+   36 LogicalComparer: DIFFERENT .
 
-    $default	reduce using rule 38 (AttribuitionExpression)
-
+    $default  reduce using rule 36 (LogicalComparer)
 
 
 state 61
 
-    AttribuitionValue  ->  MathExpression .   (rule 43)
-    MathExpression  ->  MathExpression . Operator MathExpression   (rule 52)
+   37 LogicalComparer: EQUAL .
 
-    PLUS	shift, and go to state 69
-    MINUS	shift, and go to state 70
-    TIMES	shift, and go to state 71
-    DIVIDE	shift, and go to state 72
-
-    $default	reduce using rule 43 (AttribuitionValue)
-
-    Operator	go to state 73
-
+    $default  reduce using rule 37 (LogicalComparer)
 
 
 state 62
 
-    MathExpression  ->  MathParam .   (rule 51)
+   31 BoolExpression: NumberOrIdentifier LogicalComparer . NumberOrIdentifier
 
-    $default	reduce using rule 51 (MathExpression)
+    IDENTIFIER  shift, and go to state 38
+    NUMBER      shift, and go to state 39
 
+    NumberOrIdentifier  go to state 76
 
 
 state 63
 
-    DeclarationExpression  ->  Type IDENTIFIER RECEIVES . AttribuitionValue   (rule 45)
+   42 ForExpression: FOR IDENTIFIER FROM . NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER
+   43              | FOR IDENTIFIER FROM . NumberOrIdentifier TO NumberOrIdentifier
 
-    OPEN_PARENTHESIS	shift, and go to state 54
-    IDENTIFIER	shift, and go to state 55
-    NUMBER	shift, and go to state 56
-    STRING_VALUE	shift, and go to state 57
-    TRUE	shift, and go to state 58
-    FALSE	shift, and go to state 59
+    IDENTIFIER  shift, and go to state 38
+    NUMBER      shift, and go to state 39
 
-    AttribuitionValue	go to state 74
-    MathExpression	go to state 61
-    MathParam	go to state 62
-
+    NumberOrIdentifier  go to state 77
 
 
 state 64
 
-    BoolComparasion  ->  BoolExpression BinaryOperator BoolComparasion .   (rule 20)
+   21 FunctionExpression: FUNCTION IDENTIFIER OPEN_PARENTHESIS . Parameter CLOSE_PARENTHESIS
 
-    $default	reduce using rule 20 (BoolComparasion)
+    INT          shift, and go to state 16
+    FLOAT        shift, and go to state 17
+    CHAR         shift, and go to state 18
+    STRING_TYPE  shift, and go to state 19
 
+    $default  reduce using rule 24 (Parameter)
+
+    Parameter              go to state 78
+    DeclarationExpression  go to state 66
+    Type                   go to state 36
 
 
 state 65
 
-    BoolExpression  ->  NumberOrIdentifier LogicalComparer NumberOrIdentifier .   (rule 22)
+   23 CallingFunctionExpression: IDENTIFIER OPEN_PARENTHESIS Parameter . CLOSE_PARENTHESIS
 
-    $default	reduce using rule 22 (BoolExpression)
-
+    CLOSE_PARENTHESIS  shift, and go to state 79
 
 
 state 66
 
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier . TO NumberOrIdentifier STEP NUMBER   (rule 33)
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier . TO NumberOrIdentifier   (rule 34)
+   25 Parameter: DeclarationExpression . Parameter
 
-    TO  	shift, and go to state 75
+    INT          shift, and go to state 16
+    FLOAT        shift, and go to state 17
+    CHAR         shift, and go to state 18
+    STRING_TYPE  shift, and go to state 19
 
+    $default  reduce using rule 24 (Parameter)
+
+    Parameter              go to state 80
+    DeclarationExpression  go to state 66
+    Type                   go to state 36
 
 
 state 67
 
-    MathParam  ->  NUMBER .   (rule 55)
+   59 MathExpression: OPEN_PARENTHESIS . MathExpression CLOSE_PARENTHESIS
 
-    $default	reduce using rule 55 (MathParam)
+    OPEN_PARENTHESIS  shift, and go to state 67
+    IDENTIFIER        shift, and go to state 68
+    NUMBER            shift, and go to state 81
 
+    MathExpression  go to state 82
+    MathParam       go to state 73
 
 
 state 68
 
-    MathExpression  ->  MathExpression . Operator MathExpression   (rule 52)
-    MathExpression  ->  OPEN_PARENTHESIS MathExpression . CLOSE_PARENTHESIS   (rule 53)
+   60 MathParam: IDENTIFIER .
 
-    PLUS	shift, and go to state 69
-    MINUS	shift, and go to state 70
-    TIMES	shift, and go to state 71
-    DIVIDE	shift, and go to state 72
-    CLOSE_PARENTHESIS	shift, and go to state 76
-
-    Operator	go to state 73
-
+    $default  reduce using rule 60 (MathParam)
 
 
 state 69
 
-    Operator  ->  PLUS .   (rule 56)
+   48 AttribuitionValue: NUMBER .
+   61 MathParam: NUMBER .
 
-    $default	reduce using rule 56 (Operator)
-
+    $end               reduce using rule 48 (AttribuitionValue)
+    $end               [reduce using rule 61 (MathParam)]
+    error              reduce using rule 48 (AttribuitionValue)
+    error              [reduce using rule 61 (MathParam)]
+    PLUS               reduce using rule 61 (MathParam)
+    MINUS              reduce using rule 61 (MathParam)
+    TIMES              reduce using rule 61 (MathParam)
+    DIVIDE             reduce using rule 61 (MathParam)
+    CLOSE_PARENTHESIS  reduce using rule 48 (AttribuitionValue)
+    CLOSE_PARENTHESIS  [reduce using rule 61 (MathParam)]
+    END_LINE           reduce using rule 48 (AttribuitionValue)
+    END_LINE           [reduce using rule 61 (MathParam)]
+    END                reduce using rule 48 (AttribuitionValue)
+    END                [reduce using rule 61 (MathParam)]
+    IF                 reduce using rule 48 (AttribuitionValue)
+    IF                 [reduce using rule 61 (MathParam)]
+    ELSE               reduce using rule 48 (AttribuitionValue)
+    ELSE               [reduce using rule 61 (MathParam)]
+    FOR                reduce using rule 48 (AttribuitionValue)
+    FOR                [reduce using rule 61 (MathParam)]
+    WHILE              reduce using rule 48 (AttribuitionValue)
+    WHILE              [reduce using rule 61 (MathParam)]
+    FUNCTION           reduce using rule 48 (AttribuitionValue)
+    FUNCTION           [reduce using rule 61 (MathParam)]
+    PRINT              reduce using rule 48 (AttribuitionValue)
+    PRINT              [reduce using rule 61 (MathParam)]
+    SCAN               reduce using rule 48 (AttribuitionValue)
+    SCAN               [reduce using rule 61 (MathParam)]
+    INT                reduce using rule 48 (AttribuitionValue)
+    INT                [reduce using rule 61 (MathParam)]
+    FLOAT              reduce using rule 48 (AttribuitionValue)
+    FLOAT              [reduce using rule 61 (MathParam)]
+    CHAR               reduce using rule 48 (AttribuitionValue)
+    CHAR               [reduce using rule 61 (MathParam)]
+    STRING_TYPE        reduce using rule 48 (AttribuitionValue)
+    STRING_TYPE        [reduce using rule 61 (MathParam)]
+    IDENTIFIER         reduce using rule 48 (AttribuitionValue)
+    IDENTIFIER         [reduce using rule 61 (MathParam)]
+    END_IF             reduce using rule 48 (AttribuitionValue)
+    END_IF             [reduce using rule 61 (MathParam)]
+    END_FOR            reduce using rule 48 (AttribuitionValue)
+    END_FOR            [reduce using rule 61 (MathParam)]
+    END_WHILE          reduce using rule 48 (AttribuitionValue)
+    END_WHILE          [reduce using rule 61 (MathParam)]
+    END_FUNCTION       reduce using rule 48 (AttribuitionValue)
+    END_FUNCTION       [reduce using rule 61 (MathParam)]
+    $default           reduce using rule 48 (AttribuitionValue)
 
 
 state 70
 
-    Operator  ->  MINUS .   (rule 57)
+   49 AttribuitionValue: STRING_VALUE .
 
-    $default	reduce using rule 57 (Operator)
-
+    $default  reduce using rule 49 (AttribuitionValue)
 
 
 state 71
 
-    Operator  ->  TIMES .   (rule 59)
+   47 AttribuitionExpression: IDENTIFIER RECEIVES AttribuitionValue .
 
-    $default	reduce using rule 59 (Operator)
-
+    $default  reduce using rule 47 (AttribuitionExpression)
 
 
 state 72
 
-    Operator  ->  DIVIDE .   (rule 58)
+   50 AttribuitionValue: MathExpression .
+   58 MathExpression: MathExpression . Operator MathExpression
 
-    $default	reduce using rule 58 (Operator)
+    PLUS    shift, and go to state 83
+    MINUS   shift, and go to state 84
+    TIMES   shift, and go to state 85
+    DIVIDE  shift, and go to state 86
 
+    $default  reduce using rule 50 (AttribuitionValue)
+
+    Operator  go to state 87
 
 
 state 73
 
-    MathExpression  ->  MathExpression Operator . MathExpression   (rule 52)
+   57 MathExpression: MathParam .
 
-    OPEN_PARENTHESIS	shift, and go to state 54
-    IDENTIFIER	shift, and go to state 55
-    NUMBER	shift, and go to state 67
-
-    MathExpression	go to state 77
-    MathParam	go to state 62
-
+    $default  reduce using rule 57 (MathExpression)
 
 
 state 74
 
-    DeclarationExpression  ->  Type IDENTIFIER RECEIVES AttribuitionValue .   (rule 45)
+   52 DeclarationExpression: Type IDENTIFIER RECEIVES . AttribuitionValue
 
-    $default	reduce using rule 45 (DeclarationExpression)
+    OPEN_PARENTHESIS  shift, and go to state 67
+    IDENTIFIER        shift, and go to state 68
+    NUMBER            shift, and go to state 69
+    STRING_VALUE      shift, and go to state 70
 
+    AttribuitionValue  go to state 88
+    MathExpression     go to state 72
+    MathParam          go to state 73
 
 
 state 75
 
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier TO . NumberOrIdentifier STEP NUMBER   (rule 33)
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier TO . NumberOrIdentifier   (rule 34)
+   29 BoolComparasion: BoolExpression BinaryOperator BoolComparasion .
 
-    IDENTIFIER	shift, and go to state 31
-    NUMBER	shift, and go to state 32
-
-    NumberOrIdentifier	go to state 78
-
+    $default  reduce using rule 29 (BoolComparasion)
 
 
 state 76
 
-    MathExpression  ->  OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS .   (rule 53)
+   31 BoolExpression: NumberOrIdentifier LogicalComparer NumberOrIdentifier .
 
-    $default	reduce using rule 53 (MathExpression)
-
+    $default  reduce using rule 31 (BoolExpression)
 
 
 state 77
 
-    MathExpression  ->  MathExpression . Operator MathExpression   (rule 52)
-    MathExpression  ->  MathExpression Operator MathExpression .   (rule 52)
+   42 ForExpression: FOR IDENTIFIER FROM NumberOrIdentifier . TO NumberOrIdentifier STEP NUMBER
+   43              | FOR IDENTIFIER FROM NumberOrIdentifier . TO NumberOrIdentifier
 
-    PLUS	shift, and go to state 69
-    MINUS	shift, and go to state 70
-    TIMES	shift, and go to state 71
-    DIVIDE	shift, and go to state 72
-
-    PLUS	[reduce using rule 52 (MathExpression)]
-    MINUS	[reduce using rule 52 (MathExpression)]
-    TIMES	[reduce using rule 52 (MathExpression)]
-    DIVIDE	[reduce using rule 52 (MathExpression)]
-    $default	reduce using rule 52 (MathExpression)
-
-    Operator	go to state 73
-
+    TO  shift, and go to state 89
 
 
 state 78
 
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier . STEP NUMBER   (rule 33)
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier .   (rule 34)
+   21 FunctionExpression: FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter . CLOSE_PARENTHESIS
 
-    STEP	shift, and go to state 79
-
-    $default	reduce using rule 34 (ForExpression)
-
+    CLOSE_PARENTHESIS  shift, and go to state 90
 
 
 state 79
 
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP . NUMBER   (rule 33)
+   23 CallingFunctionExpression: IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS .
 
-    NUMBER	shift, and go to state 80
-
+    $default  reduce using rule 23 (CallingFunctionExpression)
 
 
 state 80
 
-    ForExpression  ->  FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER .   (rule 33)
+   25 Parameter: DeclarationExpression Parameter .
 
-    $default	reduce using rule 33 (ForExpression)
-
+    $default  reduce using rule 25 (Parameter)
 
 
 state 81
 
-    $   	go to state 82
+   61 MathParam: NUMBER .
 
+    $default  reduce using rule 61 (MathParam)
 
 
 state 82
 
-    $   	go to state 83
+   58 MathExpression: MathExpression . Operator MathExpression
+   59               | OPEN_PARENTHESIS MathExpression . CLOSE_PARENTHESIS
 
+    PLUS               shift, and go to state 83
+    MINUS              shift, and go to state 84
+    TIMES              shift, and go to state 85
+    DIVIDE             shift, and go to state 86
+    CLOSE_PARENTHESIS  shift, and go to state 91
+
+    Operator  go to state 87
 
 
 state 83
 
-    $default	accept
+   62 Operator: PLUS .
+
+    $default  reduce using rule 62 (Operator)
+
+
+state 84
+
+   63 Operator: MINUS .
+
+    $default  reduce using rule 63 (Operator)
+
+
+state 85
+
+   65 Operator: TIMES .
+
+    $default  reduce using rule 65 (Operator)
+
+
+state 86
+
+   64 Operator: DIVIDE .
+
+    $default  reduce using rule 64 (Operator)
+
+
+state 87
+
+   58 MathExpression: MathExpression Operator . MathExpression
+
+    OPEN_PARENTHESIS  shift, and go to state 67
+    IDENTIFIER        shift, and go to state 68
+    NUMBER            shift, and go to state 81
+
+    MathExpression  go to state 92
+    MathParam       go to state 73
+
+
+state 88
+
+   52 DeclarationExpression: Type IDENTIFIER RECEIVES AttribuitionValue .
+
+    $default  reduce using rule 52 (DeclarationExpression)
+
+
+state 89
+
+   42 ForExpression: FOR IDENTIFIER FROM NumberOrIdentifier TO . NumberOrIdentifier STEP NUMBER
+   43              | FOR IDENTIFIER FROM NumberOrIdentifier TO . NumberOrIdentifier
+
+    IDENTIFIER  shift, and go to state 38
+    NUMBER      shift, and go to state 39
+
+    NumberOrIdentifier  go to state 93
+
+
+state 90
+
+   21 FunctionExpression: FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS .
+
+    $default  reduce using rule 21 (FunctionExpression)
+
+
+state 91
+
+   59 MathExpression: OPEN_PARENTHESIS MathExpression CLOSE_PARENTHESIS .
+
+    $default  reduce using rule 59 (MathExpression)
+
+
+state 92
+
+   58 MathExpression: MathExpression . Operator MathExpression
+   58               | MathExpression Operator MathExpression .
+
+    PLUS    shift, and go to state 83
+    MINUS   shift, and go to state 84
+    TIMES   shift, and go to state 85
+    DIVIDE  shift, and go to state 86
+
+    PLUS      [reduce using rule 58 (MathExpression)]
+    MINUS     [reduce using rule 58 (MathExpression)]
+    TIMES     [reduce using rule 58 (MathExpression)]
+    DIVIDE    [reduce using rule 58 (MathExpression)]
+    $default  reduce using rule 58 (MathExpression)
+
+    Operator  go to state 87
+
+
+state 93
+
+   42 ForExpression: FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier . STEP NUMBER
+   43              | FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier .
+
+    STEP  shift, and go to state 94
+
+    $default  reduce using rule 43 (ForExpression)
+
+
+state 94
+
+   42 ForExpression: FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP . NUMBER
+
+    NUMBER  shift, and go to state 95
+
+
+state 95
+
+   42 ForExpression: FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER .
+
+    $default  reduce using rule 42 (ForExpression)
