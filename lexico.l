@@ -1,9 +1,6 @@
 %{
 	#include "global.h"
 	#include "sintatico.h"
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include "string.h"
 %}
 
 white [ \t]+
@@ -84,7 +81,7 @@ identifier {letter}(_|{letter}|{digit})*
 
 
 {string}	{ 
-			yylval = (char*) malloc( sizeof(char) ); 
+			yylval = (char*) malloc( 100 * sizeof(char) ); 
 			strcpy(yylval, yytext);
 			return (STRING_VALUE);
 		}

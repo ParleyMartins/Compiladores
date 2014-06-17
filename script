@@ -1,8 +1,16 @@
 #!/bin/bash
 
 EXEC=./prog
-INPUT=./entrada
-OUTPUT=./saida.py
+INPUT=./$1
+OUTPUT=./$2
+
+if [ -z $1 ]; then
+	INPUT=./entrada
+fi
+
+if [ -z $2 ]; then
+	OUTPUT=./saida.py
+fi
 
 make 
 
