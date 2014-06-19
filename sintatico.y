@@ -6,6 +6,7 @@
 	int scope = 0;
 	int has_error = 0;
 	int second_parse = 0;
+	char* argumentList;
 %}
 
 %token PLUS
@@ -62,6 +63,8 @@
 %token END_WHILE
 %token END_FUNCTION
 
+%token COMMA
+
 %start StartExpression
 
 %%
@@ -71,8 +74,11 @@ StartExpression:
 		Symbol* main = createSymbol(NULL, "void",
 				"main", "", "int", scope);
 		table = createTable(main, debugOption);
-
+	
+		Table* functionsTable = createTable(main, debugOption);
 		printCode("#!/usr/bin/env python\n\n", second_parse);
+
+		argumentList = (char *) malloc(10 * sizeof(char));
 	} Input
 	;
 
@@ -97,11 +103,28 @@ Line:
 		} else {
 			printTable(table);
 		}
+
+		if (tableFunctions != NULL){
+			deleteTable(functionsTable, scope);
+			printTable(functionsTable);
+		} else {
+			printTable(functionsTable);
+		}
+
 		if (table->head != NULL){
 			printf("Error: Finalize uma das estruturas\n");
 			scope--;
 			deleteTable(table, scope);
 			printTable(table);
+			has_error = 1;
+		}
+
+
+		if (functionsTable->head != NULL){
+			printf("Error: Finalize uma das estruturas\n");
+			scope--;
+			deleteTable(functionsTable, scope);
+			printTable(functionsTable);
 			has_error = 1;
 		}
 	}
@@ -156,16 +179,16 @@ ScanExpression:
 
 FunctionExpression:
 	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS{
-		Symbol* function = findName(table, $2);
+		Symbol* function = findName(functionsTable, $2);
 		if(function != NULL){
 			printf("Error: Funcao %s ja declarada\n", $2);
 			has_error = 1;
 		}
 		char *buffer = (char*)malloc(sizeof(char));
-		sprintf(buffer,"def %s(%s):",$2,$4);
+		sprintf(buffer, "def %s( %s ):", $2, $4);
 		printCode(buffer,second_parse);
 		scope++;
-		insertVariable(table,"function",$2,NULL,NULL,scope);
+		insertVariable(functionsTable, "function", $2, argumentList, NULL, scope);
 	}
 	| END_FUNCTION {
 		deleteTable(table,scope);
@@ -175,8 +198,8 @@ FunctionExpression:
 	;
 
 CallingFunctionExpression:
-	IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS{
-		Symbol* function = findName(table, $1);
+	IDENTIFIER OPEN_PARENTHESIS Parameter {
+		Symbol* function = findName(fucntionsTable, $1);
 		if(function == NULL){
 			printf("Error: Funcao %s nao declarada\n", $1);
 			has_error = 1;
@@ -188,14 +211,24 @@ Parameter:
 	{
 		$$ = "";
 	}
-	| DeclarationExpression Parameter{
+	| DeclarationExpression COMMA Parameter {	
 		if($1!=NULL){
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
-			if(strcmp($2,"")!=0){
-				strcat(str,", ");
-				strcat(str, $2);
+			if(strcmp($3,"")!=0){
+				printf("Error: Funcao deve ter parametro depois da vírgula.");
+				has_error = 1;
+			} else{
+				strcat(str, ", ");
+				strcat(str, $3);
 			}
+			$$ = str;
+		}
+	}
+	| DeclarationExpression Parameter CLOSE_PARENTHESIS{
+		if($1!=NULL){
+			char *str = (char*) malloc (sizeof(char));
+			strcpy(str,$1);
 			$$ = str;
 		}
 	}
@@ -357,6 +390,9 @@ AttribuitionValue:
 DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
+		argumentList = "";
+		strcat(argumentList, $1);
+		strcat(argumentList, " ");
 		$$ = $2;
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
@@ -364,6 +400,9 @@ DeclarationExpression:
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"%s = %s", $2, $4);
 		printCode(buffer, second_parse);
+
+		strcat(argumentList, $1);
+		strcat(argumentList, " ");
 	}
 	;
 
