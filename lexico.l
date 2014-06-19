@@ -34,6 +34,7 @@ identifier {letter}(_|{letter}|{digit})*
 "<-"			return (RECEIVES);
 "\n"	 		return (END_LINE);
 
+"," 				return(COMMA);
 "e"   			return(AND); 
 "ou"   			return(OR);
 "nao" 			return(NOT);

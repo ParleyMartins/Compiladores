@@ -1,12 +1,14 @@
 %{
 	#include "global.h"
 	Table* table;
+	Table* functionsTable;
 	int debugOption;
 	int lineNumber = 1;
 	int scope = 0;
 	int has_error = 0;
 	int second_parse = 0;
 	char* argumentList;
+	char* functionName;
 %}
 
 %token PLUS
@@ -74,8 +76,7 @@ StartExpression:
 		Symbol* main = createSymbol(NULL, "void",
 				"main", "", "int", scope);
 		table = createTable(main, debugOption);
-	
-		Table* functionsTable = createTable(main, debugOption);
+
 		printCode("#!/usr/bin/env python\n\n", second_parse);
 
 		argumentList = (char *) malloc(10 * sizeof(char));
@@ -104,7 +105,7 @@ Line:
 			printTable(table);
 		}
 
-		if (tableFunctions != NULL){
+		if (functionsTable != NULL){
 			deleteTable(functionsTable, scope);
 			printTable(functionsTable);
 		} else {
@@ -172,15 +173,16 @@ ScanExpression:
 			has_error = 1;
 		}
 		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"%s = raw_input()\n#A funcao raw_input aceita como argumento a mensagem para o usuario",$2);
+		sprintf(buffer,"%s = raw_input()",$2);
 		printCode(buffer, second_parse);
+		printCode(" # A funcao raw_input aceita como argumento a mensagem para o usuario", second_parse);
 	}
 	;
 
 FunctionExpression:
-	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS{
+	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter {
 		Symbol* function = findName(functionsTable, $2);
-		if(function != NULL){
+		if (function != NULL) {
 			printf("Error: Funcao %s ja declarada\n", $2);
 			has_error = 1;
 		}
@@ -199,7 +201,7 @@ FunctionExpression:
 
 CallingFunctionExpression:
 	IDENTIFIER OPEN_PARENTHESIS Parameter {
-		Symbol* function = findName(fucntionsTable, $1);
+		Symbol* function = findName(functionsTable, $1);
 		if(function == NULL){
 			printf("Error: Funcao %s nao declarada\n", $1);
 			has_error = 1;
@@ -212,16 +214,23 @@ Parameter:
 		$$ = "";
 	}
 	| DeclarationExpression COMMA Parameter {	
-		if($1!=NULL){
+		if($1 != NULL) {
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
-			if(strcmp($3,"")!=0){
-				printf("Error: Funcao deve ter parametro depois da vírgula.");
+			
+			Symbol* variable = findName(table, $1);
+			if (variable != NULL) {
+				variable->value = "10";
+			}
+
+			if(strcmp($3,"") == 0) {
+				printf("Error: Funcao deve ter parametro depois da vírgula.\n");
 				has_error = 1;
-			} else{
+			} else {
 				strcat(str, ", ");
 				strcat(str, $3);
 			}
+
 			$$ = str;
 		}
 	}
@@ -390,7 +399,7 @@ AttribuitionValue:
 DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
-		argumentList = "";
+		strcpy(argumentList, "");
 		strcat(argumentList, $1);
 		strcat(argumentList, " ");
 		$$ = $2;
@@ -443,15 +452,17 @@ MathExpression:
 
 MathParam:
 	IDENTIFIER {
-		Symbol* val = findName(table,$1);
-		if(val!=NULL && val->value!=NULL){
-			if(strcmp(val->type,"int")==0){
+		Symbol* variable = findName(table,$1);
+		if(variable != NULL && variable->value != NULL){
+			if(strcmp(variable->type,"int") == 0) {
 				$$ = $1;
 			} else {
-				printf("Error: Variavel inteira");
+				printf("Error: Variavel inteira\n");
+				has_error = 1;
 			}
 		} else {
-			printf("Error: Variavel não declarada ou valor não declarado");
+			printf("Error: Variavel não declarada ou valor não declarado\n");
+			has_error = 1;
 		}
 	}
 	| NUMBER {
@@ -488,7 +499,11 @@ int main(int argc, char* argv[]) {
 			debugOption = 0;
 		}
 	}
+
+
 	table = calloc(1, sizeof(Table));
+	functionsTable = calloc(1, sizeof(Table));
+
 	yyparse();	
 
 	if (table->head != NULL){
