@@ -196,15 +196,18 @@ FunctionExpression:
 		deleteTable(table,scope);
 		scope--;
 		printTable(table);
+		strcpy(argumentList, "");
 	}
 	;
 
 CallingFunctionExpression:
-	IDENTIFIER OPEN_PARENTHESIS Parameter {
+	IDENTIFIER OPEN_PARENTHESIS CallingParameter {
 		Symbol* function = findName(functionsTable, $1);
 		if(function == NULL){
 			printf("Error: Funcao %s nao declarada\n", $1);
 			has_error = 1;
+		} else {
+			strcat(argumentList, function->value);		
 		}
 	}
 	;
@@ -235,6 +238,49 @@ Parameter:
 		}
 	}
 	| DeclarationExpression Parameter CLOSE_PARENTHESIS{
+		if($1!=NULL){
+			char *str = (char*) malloc (sizeof(char));
+			strcpy(str,$1);
+			$$ = str;
+		}
+	}
+	;
+
+CallingParameter:
+	{
+		$$ = "";
+	}
+	| IDENTIFIER COMMA Parameter {	
+		if($1 != NULL) {
+			char *str = (char*) malloc (sizeof(char));
+			strcpy(str,$1);
+
+			printf("%s\n", argumentList);
+			char * aux = strtok(argumentList, " ");
+			printf("%s\n", aux);
+			printf("%s\n", argumentList);
+			aux = strtok(NULL, " ");
+			printf("%s\n", aux);
+			aux = strtok(NULL, " ");
+			printf("%s\n", aux);
+
+			Symbol* variable = findName(table, $1);
+			//if (variable != NULL) {
+				//if (strcmp(variable->type, ""));
+			//}
+
+			if(strcmp($3,"") == 0) {
+				printf("Error: Funcao deve ter parametro depois da vírgula.\n");
+				has_error = 1;
+			} else {
+				strcat(str, ", ");
+				strcat(str, $3);
+			}
+
+			$$ = str;
+		}
+	}
+	| IDENTIFIER Parameter CLOSE_PARENTHESIS{
 		if($1!=NULL){
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
@@ -399,7 +445,6 @@ AttribuitionValue:
 DeclarationExpression:
 	Type IDENTIFIER {
 		insertVariable(table, $1, $2, NULL, NULL, scope);
-		strcpy(argumentList, "");
 		strcat(argumentList, $1);
 		strcat(argumentList, " ");
 		$$ = $2;
@@ -503,6 +548,7 @@ int main(int argc, char* argv[]) {
 
 	table = calloc(1, sizeof(Table));
 	functionsTable = calloc(1, sizeof(Table));
+	argumentList = calloc(1, sizeof(char));
 
 	yyparse();	
 
