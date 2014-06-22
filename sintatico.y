@@ -79,7 +79,7 @@ StartExpression:
 
 		printCode("#!/usr/bin/env python\n\n", second_parse);
 
-		argumentList = (char *) malloc(10 * sizeof(char));
+		argumentList = calloc(10, sizeof(char));
 	} Input
 	;
 
@@ -141,7 +141,7 @@ Expression:
 	| ScanExpression
 	| FunctionExpression
 	| CallingFunctionExpression
-	| error END_LINE{
+	| error END_LINE {
 		lineNumber++;
 		yyerrok;
 	}
@@ -180,7 +180,7 @@ ScanExpression:
 	;
 
 FunctionExpression:
-	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter {
+	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS {
 		Symbol* function = findName(functionsTable, $2);
 		if (function != NULL) {
 			printf("Error: Funcao %s ja declarada\n", $2);
@@ -191,6 +191,19 @@ FunctionExpression:
 		printCode(buffer,second_parse);
 		scope++;
 		insertVariable(functionsTable, "function", $2, argumentList, NULL, scope);
+	}
+	| FUNCTION IDENTIFIER OPEN_PARENTHESIS CLOSE_PARENTHESIS {
+		Symbol* function = findName(functionsTable, $2);
+		if (function != NULL) {
+			printf("Error: Funcao %s ja declarada\n", $2);
+			has_error = 1;
+		}
+		char *buffer = (char*)malloc(sizeof(char));
+		sprintf(buffer, "def %s():", $2);
+		printCode(buffer,second_parse);
+		
+		scope++;
+		insertVariable(functionsTable, "function", $2, NULL, NULL, scope);
 	}
 	| END_FUNCTION {
 		deleteTable(table,scope);
@@ -207,16 +220,17 @@ CallingFunctionExpression:
 			printf("Error: Funcao %s nao declarada\n", $1);
 			has_error = 1;
 		} else {
-			strcat(argumentList, function->value);		
+			strcat(argumentList, function->value);
+			
+			char *buffer = (char*) malloc(sizeof(char));
+			sprintf(buffer,"%s( %s )",$1, $3);
+			printCode(buffer, second_parse);		
 		}
 	}
 	;
 
 Parameter:
-	{
-		$$ = "";
-	}
-	| DeclarationExpression COMMA Parameter {	
+	 Parameter COMMA DeclarationExpression {	
 		if($1 != NULL) {
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
@@ -237,11 +251,9 @@ Parameter:
 			$$ = str;
 		}
 	}
-	| DeclarationExpression Parameter CLOSE_PARENTHESIS{
-		if($1!=NULL){
-			char *str = (char*) malloc (sizeof(char));
-			strcpy(str,$1);
-			$$ = str;
+	| DeclarationExpression {
+		if($1 != NULL){
+			$$ = $1;
 		}
 	}
 	;
@@ -250,19 +262,10 @@ CallingParameter:
 	{
 		$$ = "";
 	}
-	| IDENTIFIER COMMA Parameter {	
+	| IDENTIFIER COMMA CallingParameter {	
 		if($1 != NULL) {
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
-
-			printf("%s\n", argumentList);
-			char * aux = strtok(argumentList, " ");
-			printf("%s\n", aux);
-			printf("%s\n", argumentList);
-			aux = strtok(NULL, " ");
-			printf("%s\n", aux);
-			aux = strtok(NULL, " ");
-			printf("%s\n", aux);
 
 			Symbol* variable = findName(table, $1);
 			//if (variable != NULL) {
@@ -280,7 +283,7 @@ CallingParameter:
 			$$ = str;
 		}
 	}
-	| IDENTIFIER Parameter CLOSE_PARENTHESIS{
+	| IDENTIFIER CallingParameter CLOSE_PARENTHESIS{
 		if($1!=NULL){
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
@@ -548,7 +551,7 @@ int main(int argc, char* argv[]) {
 
 	table = calloc(1, sizeof(Table));
 	functionsTable = calloc(1, sizeof(Table));
-	argumentList = calloc(1, sizeof(char));
+	
 
 	yyparse();	
 
