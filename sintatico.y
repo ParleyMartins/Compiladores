@@ -1,5 +1,6 @@
 %{
 	#include "global.h"
+
 	Table* table;
 	Table* functionsTable;
 	int debugOption;
@@ -8,7 +9,7 @@
 	int has_error = 0;
 	int second_parse = 0;
 	char* argumentList;
-	char* functionName;
+	char* callingList;
 %}
 
 %token PLUS
@@ -79,7 +80,8 @@ StartExpression:
 
 		printCode("#!/usr/bin/env python\n\n", second_parse);
 
-		argumentList = calloc(10, sizeof(char));
+		argumentList = calloc(100, sizeof(char));
+		callingList = calloc(100, sizeof(char));
 	} Input
 	;
 
@@ -189,8 +191,11 @@ FunctionExpression:
 		char *buffer = (char*)malloc(sizeof(char));
 		sprintf(buffer, "def %s( %s ):", $2, $4);
 		printCode(buffer,second_parse);
+
 		scope++;
 		insertVariable(functionsTable, "function", $2, argumentList, NULL, scope);
+		argumentList = calloc(100, sizeof(char));
+
 	}
 	| FUNCTION IDENTIFIER OPEN_PARENTHESIS CLOSE_PARENTHESIS {
 		Symbol* function = findName(functionsTable, $2);
@@ -198,39 +203,68 @@ FunctionExpression:
 			printf("Error: Funcao %s ja declarada\n", $2);
 			has_error = 1;
 		}
+
 		char *buffer = (char*)malloc(sizeof(char));
 		sprintf(buffer, "def %s():", $2);
 		printCode(buffer,second_parse);
 		
 		scope++;
-		insertVariable(functionsTable, "function", $2, NULL, NULL, scope);
+		insertVariable(functionsTable, "function", $2, "", NULL, scope);
 	}
 	| END_FUNCTION {
 		deleteTable(table,scope);
 		scope--;
 		printTable(table);
-		strcpy(argumentList, "");
 	}
 	;
 
 CallingFunctionExpression:
-	IDENTIFIER OPEN_PARENTHESIS CallingParameter {
+	IDENTIFIER OPEN_PARENTHESIS CallingParameter CLOSE_PARENTHESIS {
 		Symbol* function = findName(functionsTable, $1);
 		if(function == NULL){
 			printf("Error: Funcao %s nao declarada\n", $1);
 			has_error = 1;
 		} else {
-			strcat(argumentList, function->value);
+			char *arguments = (char*) malloc(sizeof(char));
+			strcat(arguments, function->value);
 			
-			char *buffer = (char*) malloc(sizeof(char));
-			sprintf(buffer,"%s( %s )",$1, $3);
-			printCode(buffer, second_parse);		
+			if (strcmp(arguments, callingList) == 0) {
+				char *buffer = (char*) malloc(sizeof(char));
+				sprintf(buffer,"%s( %s )",$1, $3);
+				printCode(buffer, second_parse);
+			} else {
+				printf("Error: A funcao %s espera argumentos dos tipos [ %s]. Obtidos [ %s]\n", $1, arguments, callingList);
+				has_error = 1;
+			}
+
+			callingList = calloc(100, sizeof(char));
+		}
+	}
+	| IDENTIFIER OPEN_PARENTHESIS CLOSE_PARENTHESIS {
+		Symbol* function = findName(functionsTable, $1);
+		if(function == NULL){
+			printf("Error: Funcao %s nao declarada\n", $1);
+			has_error = 1;
+		} else {
+			char *arguments = (char*) malloc(sizeof(char));
+			strcat(arguments, function->value);
+
+			if (strcmp(arguments, "") == 0) {
+				char *buffer = (char*) malloc(sizeof(char));
+				sprintf(buffer,"%s()",$1);
+				printCode(buffer, second_parse);		
+			} else {
+				printf("Error: A funcao %s espera argumentos dos tipos [ %s]. Obtidos [ %s]\n", $1, arguments, callingList);
+				has_error = 1;
+			}
+			
+			callingList = calloc(100, sizeof(char));
 		}
 	}
 	;
 
 Parameter:
-	 Parameter COMMA DeclarationExpression {	
+	DeclarationExpression COMMA Parameter {	
 		if($1 != NULL) {
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
@@ -240,55 +274,61 @@ Parameter:
 				variable->value = "10";
 			}
 
-			if(strcmp($3,"") == 0) {
-				printf("Error: Funcao deve ter parametro depois da vírgula.\n");
-				has_error = 1;
-			} else {
-				strcat(str, ", ");
-				strcat(str, $3);
-			}
+			strcat(str, ", ");
+			strcat(str, $3);
 
 			$$ = str;
 		}
 	}
 	| DeclarationExpression {
 		if($1 != NULL){
+			Symbol* variable = findName(table, $1);			
+			if (variable != NULL) {
+				variable->value = "10";
+			}
+
 			$$ = $1;
 		}
 	}
 	;
 
 CallingParameter:
-	{
-		$$ = "";
-	}
-	| IDENTIFIER COMMA CallingParameter {	
-		if($1 != NULL) {
+	Argument COMMA CallingParameter {	
+		if ($1 != NULL) {
 			char *str = (char*) malloc (sizeof(char));
 			strcpy(str,$1);
-
-			Symbol* variable = findName(table, $1);
-			//if (variable != NULL) {
-				//if (strcmp(variable->type, ""));
-			//}
-
-			if(strcmp($3,"") == 0) {
-				printf("Error: Funcao deve ter parametro depois da vírgula.\n");
-				has_error = 1;
-			} else {
-				strcat(str, ", ");
-				strcat(str, $3);
-			}
+			
+			strcat(str, ", ");
+			strcat(str, $3);
+		
+			$$ = str;
+		}
+	}
+	| Argument {
+		if ($1 != NULL) {
+			char *str = (char*) malloc (sizeof(char));
+			strcpy(str,$1);
 
 			$$ = str;
 		}
 	}
-	| IDENTIFIER CallingParameter CLOSE_PARENTHESIS{
-		if($1!=NULL){
-			char *str = (char*) malloc (sizeof(char));
-			strcpy(str,$1);
-			$$ = str;
+	;
+
+Argument:
+	IDENTIFIER {
+		Symbol* variable = findName(table, $1);
+		if (variable != NULL) {
+			strcat(callingList, variable->type);
+			strcat(callingList, " ");
 		}
+	}
+	| NUMBER {
+		strcat(callingList, "int");
+		strcat(callingList, " ");
+	}
+	| STRING_VALUE {
+		strcat(callingList, "string");
+		strcat(callingList, " ");
 	}
 	;
 
