@@ -1,5 +1,6 @@
 %{
 	#include "global.h"
+	#include "code.h"
 
 	Table* table;
 	Table* functionsTable;
@@ -8,6 +9,7 @@
 	int scope = 0;
 	int has_error = 0;
 	int second_parse = 0;
+	int allow_comments = 0;
 	char* argumentList;
 	char* callingList;
 %}
@@ -79,6 +81,11 @@ StartExpression:
 		table = createTable(main, debugOption);
 
 		printCode("#!/usr/bin/env python\n\n", second_parse);
+		printComment("#Ola, bem-vindo ao Python!\n", second_parse, allow_comments);
+		printComment("#O Símbolo '#' inicia um comentário. O identificador Python ignora tudo que vem depois do '#'\n", second_parse, allow_comments);
+		printComment("#Apesar do computador ignorar o comentário, use-o para clarear pontos 'obscuros' do código.\n", second_parse, allow_comments);
+
+		printComment("\n#Observe os finais das linhas.\n\n", second_parse, allow_comments);
 
 		argumentList = calloc(100, sizeof(char));
 		callingList = calloc(100, sizeof(char));
@@ -130,6 +137,13 @@ Line:
 			printTable(functionsTable);
 			has_error = 1;
 		}
+		printComment("\n#Se voce chegou aqui se perguntando onde estao as malditas chaves, \n", second_parse, allow_comments);
+		printComment("#enquanto estiver no Python nao se preocupe com isso. O que essa linguagem usa \n", second_parse, allow_comments);
+		printComment("#é a identacao do codigo. Assim o controle do escopo é mais fácil e o seu codigo fica muito mais legivel. =) \n", second_parse, allow_comments);
+	
+		printComment("\n#Um outro detalhe que voce deve ter percebido (se ja usou alguma outra linguagem), \n", second_parse, allow_comments);
+		printComment("#é que o ';' também nao apareceu no codigo. \n", second_parse, allow_comments);
+		printComment("#O Python nao precisa disso para saber que o seu comando acabou. Um comando por linha é o suficiente. \n", second_parse, allow_comments);
 	}
 	;
 
@@ -153,7 +167,8 @@ PrintExpression:
 	PRINT STRING_VALUE {
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"print %s",$2);
-		printCode(buffer, second_parse);	
+		printCode(buffer, second_parse);
+		printComment("\t#Observe que para imprimir basta colocar a palavra reservada 'print' e a frase desejada entre aspas (simples ou duplas).", second_parse, allow_comments);
 	}
 	| PRINT IDENTIFIER {
 		Symbol* variable = findName(table, $2);
@@ -162,8 +177,9 @@ PrintExpression:
 			has_error = 1;
 		}
 		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"print %s",$2);
+		sprintf(buffer,"print %s", $2);
 		printCode(buffer, second_parse);
+		printComment("\t#Para imprimir uma variavel coloque a palavra reservada 'print' e o nome da variavel.", second_parse, allow_comments);
 	}
 	;
 
@@ -177,7 +193,9 @@ ScanExpression:
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"%s = raw_input()",$2);
 		printCode(buffer, second_parse);
-		printCode(" # A funcao raw_input aceita como argumento a mensagem para o usuario", second_parse);
+		printComment(" \t#A funcao raw_input aceita como argumento a mensagem para o usuario\n", second_parse, allow_comments);			
+		indent(scope, second_parse);
+		printComment("\t#Essa funcao le o que o usuario digitar ate o 'enter'", second_parse, allow_comments);
 	}
 	;
 
@@ -215,6 +233,7 @@ FunctionExpression:
 		deleteTable(table,scope);
 		scope--;
 		printTable(table);
+		printComment("#Observe a identaçao da proxima linha. \n", second_parse, allow_comments);
 	}
 	;
 
@@ -339,14 +358,18 @@ IfExpression:
 		printCode(buffer, second_parse);
 		scope++; 
 		insertVariable(table, "function", "if", NULL, NULL, scope);
+		printComment("\t#Uma estrutura condicional usa o 'if' e a condicao (sem parenteses) seguida de dois pontos", second_parse, allow_comments);
 	}
 	| ELSE {
 		printCode("else:", second_parse);			
+		printComment("\t#Se uma segunda condicao for colocada dentro do else, use 'elif [expressao2] :'", second_parse, allow_comments);
+	
 	}
 	| END_IF {
 		deleteTable(table, scope);
 		scope--;
 		printTable(table);
+		printComment("#Observe a identaçao da proxima linha. \n", second_parse, allow_comments);
 	}
 	;
 
@@ -414,11 +437,13 @@ WhileExpression:
 		printCode(buffer, second_parse);
 		scope++;
 		insertVariable(table, "function", "while", NULL, NULL, scope);
+		printComment("#\tEssa estrutura de repeticao funciona semelhante ao if. \n", second_parse, allow_comments);
 	}
 	| END_WHILE {
 		deleteTable(table, scope);
 		scope--;
 		printTable(table);
+		printComment("#Observe a identaçao da proxima linha. \n", second_parse, allow_comments);
 	}
 	;
 	
@@ -429,6 +454,9 @@ ForExpression:
 		printCode(buffer, second_parse);
 		scope++;
 		insertVariable(table, "function", "for", NULL, NULL, scope);
+		printComment("\t#O for usa uma variavel (pra receber os valores temporarios) \n", second_parse, allow_comments);
+		indent(scope, second_parse);
+		printComment("\t#E também chama a funcao range, que recebe um valor inicial, um valor final e um passo. \n", second_parse, allow_comments);
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
 		char *buffer = (char*) malloc(sizeof(char));
@@ -436,11 +464,13 @@ ForExpression:
 		printCode(buffer, second_parse);
 		scope++;
 		insertVariable(table, "function", "for", NULL, NULL, scope);
+		printComment("\t#O terceiro parametro do range é opcional e igual a um por definicao . \n", second_parse, allow_comments);
 	}
 	| END_FOR {
 		deleteTable(table, scope);
 		scope--;
 		printTable(table);
+		printComment("#Observe a identaçao da proxima linha. \n", second_parse, allow_comments);
 	}
 	;
 
@@ -470,6 +500,7 @@ AttribuitionExpression:
 		char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"%s = %s", $1, $3);
 		printCode(buffer, second_parse);
+		printComment("\t #Sua variavel sempre é declarada quando voce atribui um valor a ela.\n", second_parse, allow_comments);
 	}
 	;
 
@@ -491,6 +522,11 @@ DeclarationExpression:
 		strcat(argumentList, $1);
 		strcat(argumentList, " ");
 		$$ = $2;
+		printComment("#Observe que a sua variavel nao foi declarada aqui no seu codigo Python.\n", second_parse, allow_comments);
+		indent(scope, second_parse);
+		printComment("#Fique calmo. O Python não trabalha com declaracao de variaveis,\n", second_parse, allow_comments);
+		indent(scope, second_parse);
+		printComment("#voce simplesmente usa uma variavel quando achar necessario.\n", second_parse, allow_comments);
 	}
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
 		insertVariable(table, $1, $2, $4, NULL, scope);	
@@ -500,6 +536,12 @@ DeclarationExpression:
 
 		strcat(argumentList, $1);
 		strcat(argumentList, " ");
+
+		printComment("\t#Observe que a sua variavel nao possui o tipo declarado, como int ou float\n", second_parse, allow_comments);
+		indent(scope, second_parse);
+		printComment("#Relaxe. O Python que reconhece o tipo da variavel automaticamente\n", second_parse, allow_comments);
+		indent(scope, second_parse);
+		printComment("#Isso significa que ela tem um tipo, mas que pode ser mudado com um uso diferente da variavel.\n", second_parse, allow_comments);
 	}
 	;
 
@@ -580,15 +622,16 @@ int yyerror(char *s) {
 }
 
 int main(int argc, char* argv[]) {
-	if(argv[1] != NULL){
-		if(strcmp(argv[1], "-debug") == 0){ 
+	int i;
+	for(i = 0; i < argc; i++){
+		if(strcmp(argv[i], "-debug") == 0 && debugOption == 0){ 
 			debugOption = 1;
-		} else {
-			debugOption = 0;
+		}
+
+		if(strcmp(argv[i], "-comment") == 0 && allow_comments == 0){ 
+			allow_comments = 1;
 		}
 	}
-
-
 	table = calloc(1, sizeof(Table));
 	functionsTable = calloc(1, sizeof(Table));
 	

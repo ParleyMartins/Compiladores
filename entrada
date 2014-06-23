@@ -1,15 +1,13 @@
 inicio
-	inteiro a <- 10
-	inteiro b 
-	funcao matematica ()
-		se 1>2 entao
-			escreva a
-		fim_se
-	fim_funcao
 
-	funcao oi(inteiro a inteiro b)
-		escreva "ijaijdai"
-	fim_funcao
+	inteiro a
+	a <- 2
 
-	leia b
+	se a<3 entao
+		escreva "teste"
+	fim_se
+
+	para a de 1 ate 3
+		escreva a
+	fim_para
 fim

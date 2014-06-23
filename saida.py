@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 
-a = 10
 
-def matematica():
-	if  1 > 2:
-		print a
-		
+a = 2
+if  a < 3:
+	print "teste"
 	
-def oi(a, b):
-	print "ijaijdai"
+for a in range(1 , 3):
+	print a
 	
-b = raw_input()
-#A funcao raw_input aceita como argumento a mensagem para o usuario

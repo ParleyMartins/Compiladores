@@ -2,7 +2,9 @@
 
 EXEC=./prog
 INPUT=./$1
-OUTPUT=./$2
+OUTPUT=./$2.py
+
+make 
 
 if [ -z $1 ]; then
 	INPUT=./entrada
@@ -12,9 +14,11 @@ if [ -z $2 ]; then
 	OUTPUT=./saida.py
 fi
 
-make 
+if [ $3 ]; then
+	shift 2
+fi
 
-$EXEC <$INPUT >$OUTPUT
+$EXEC $* <$INPUT >$OUTPUT
 
 for line in $(cat $OUTPUT); do
 	break;

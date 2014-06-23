@@ -100,25 +100,25 @@ Symbol* findName(const Table* table, const char* name) {
 	return current;
 }
 
-int insertVariable(Table* table, char* type, char* name,
+void insertVariable(Table* table, char* type, char* name,
 		char* value, char* returnedValue, int scope){
 
 	debugMessages(table, "InsertVariable {\n");
 	if (table == NULL){
 		debugMessages(table, "Funcao nao declarada\n");
-		return UNDECLARED_FUNCTION;
+		return;
 	}
 
 	Symbol* variable = findName(table, name);
 
 	if (variable != NULL && scope == variable->scope) {
 		debugMessages(table, "Estrutura anterior nao finalizada ou variavel ja declarad\n");
-		return VARIABLE_ALREADY_DECLARED;
+		return ;
 	} else {
 		variable = createSymbol(table->tail, type, name, value, returnedValue, scope);
 		if (variable == NULL){
 			debugMessages(table, "Simbolo nao inicializado\n");
-			return UNITIALIZED_SYMBOL;
+			return ;
 		}
 		insertSymbol(table, variable);
 		findName(table, name);
@@ -131,7 +131,7 @@ int setVariable(const Table* table, const char* name, char* value){
 	Symbol* variable = findName(table, name);
 	if(variable == NULL){
 		debugMessages(table, "Variavel nao declarada\n");
-		return UNDECLARED_VARIABLE;
+		return ;
 	}
 
 	variable->value = value;
@@ -181,40 +181,3 @@ void debugMessages(const Table* table, const char* message){
 		// Nothing to do.
 	}
 }
-
-void indent(int scope, int secondParse){
-	int i;
-	for(i=0;i<scope;i++){
-		printCode("\t", secondParse);
-	}
-}
-
-void printCode(char* code, int secondParse) {
-	if (secondParse) {
-		printf("%s", code);	
-	}
-}
-
-/*void checkError(int code, char* identifier){
-
-	char errorLog = (char *) malloc (sizeof(char));
-	lineString = lineNumber + '0';
-	strcat(errorLog, "Na linha ");
-	strcat(errorLog, lineString);
-
-	switch(code){
-		case UNDECLARED_FUNCTION:
-			strcat(errorLog, ". Funcao nao declarada.\n");
-		break;
-		case VARIABLE_ALREADY_DECLARED:
-			strcat(errorLog, ". Variavel ");
-			strcat(errorLog, identifier);
-			strcat(errorLog, " ja declarada anteriormente.\n");
-		break;
-		case UNITIALIZED_SYMBOL:
-			strcat(errorLog, ". Funcao nao declarada.\n");
-		break;
-		default:
-			free(errorLog);
-	}
-}*/
