@@ -476,17 +476,10 @@ ForExpression:
 
 NumberOrIdentifier:
 	IDENTIFIER {
-		Symbol* variable = findName(table, $1);
-		if(variable == NULL){
-			printf("Error: Variavel %s nao declarada\n", $1);
+		if (is_variable_declared(table, $1) == 0 && is_variable_initialized(table, $1) == 0) {
+				$$ = $1;
+		} else {
 			has_error = 1;
-		}else{	
-			if (variable->value == NULL) {
-				printf("Error: A variavel %s precisa ser inicializada!\n", $1);
-				has_error = 1;		
-			} else {
-				$$ = variable->name;
-			}
 		}
 	}
 	| NUMBER {
@@ -582,16 +575,13 @@ MathExpression:
 
 MathParam:
 	IDENTIFIER {
-		Symbol* variable = findName(table,$1);
-		if(variable != NULL && variable->value != NULL){
-			if(strcmp(variable->type,"int") == 0) {
+		if(is_variable_declared(table, $1) == 0 && is_variable_initialized(table, $1) == 0) {
+			if (is_a_number(table, $1) == 0) {
 				$$ = $1;
 			} else {
-				printf("Error: Variavel inteira\n");
-				has_error = 1;
+				has_error = 1;			
 			}
 		} else {
-			printf("Error: Variavel não declarada ou valor não declarado\n");
 			has_error = 1;
 		}
 	}
