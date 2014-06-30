@@ -28,7 +28,6 @@ identifier {letter}(_|{letter}|{digit})*
 ">="			return (GREATER_OR_EQUAL);
 "("			return (OPEN_PARENTHESIS);
 ")"			return (CLOSE_PARENTHESIS);
-"^"			return (POWER);
 "=/="			return (DIFFERENT);
 "="			return (EQUAL);
 "<-"			return (RECEIVES);
@@ -37,7 +36,6 @@ identifier {letter}(_|{letter}|{digit})*
 "," 			return(COMMA);
 "e"   			return(AND); 
 "ou"   			return(OR);
-"nao" 			return(NOT);
 
 "inicio"		return (START);
 "fim"			return (END);

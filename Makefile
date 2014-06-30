@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -lfl -lm
 BFLAGS = -v -d
-SOURCES = sintatico.c lexico.c table.c code.c
+SOURCES = sintatico.c lexico.c table.c code.c errors.c
 
 all: prog
 

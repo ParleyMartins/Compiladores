@@ -18,7 +18,6 @@
 %token MINUS
 %token TIMES
 %token DIVIDE
-%token POWER
 
 %token LESS_THAN
 %token GREATER_THAN
@@ -34,7 +33,6 @@
 
 %token AND
 %token OR
-%token NOT
 
 %token END_LINE
 %token START
@@ -165,18 +163,17 @@ Expression:
 
 PrintExpression:
 	PRINT STRING_VALUE {
-		char *buffer = (char*) malloc(sizeof(char));
+		char *buffer = (char*) malloc(100 * sizeof(char));
 		sprintf(buffer,"print %s",$2);
 		printCode(buffer, second_parse);
 		printComment("\t#Observe que para imprimir basta colocar a palavra reservada 'print' e a frase desejada entre aspas (simples ou duplas).", second_parse, allow_comments);
 	}
 	| PRINT IDENTIFIER {
-		Symbol* variable = findName(table, $2);
-		if(variable == NULL){
-			printf("Error: Variavel %s nao declarada\n", $2);
-			has_error = 1;
-		}
-		char *buffer = (char*) malloc(sizeof(char));
+    if(!is_variable_declared(table, $2)){
+      has_error = 1;
+    }
+
+    char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"print %s", $2);
 		printCode(buffer, second_parse);
 		printComment("\t#Para imprimir uma variavel coloque a palavra reservada 'print' e o nome da variavel.", second_parse, allow_comments);
@@ -185,12 +182,11 @@ PrintExpression:
 
 ScanExpression:
 	SCAN IDENTIFIER {
-		Symbol* variable = findName(table, $2);
-		if(variable == NULL){
-			printf("Error: Variavel %s nao declarada\n", $2);
-			has_error = 1;
-		}
-		char *buffer = (char*) malloc(sizeof(char));
+    if(!is_variable_declared(table, $2)){
+      has_error = 1;
+    }
+    
+    char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"%s = raw_input()",$2);
 		printCode(buffer, second_parse);
 		printComment(" \t#A funcao raw_input aceita como argumento a mensagem para o usuario\n", second_parse, allow_comments);			
@@ -201,12 +197,11 @@ ScanExpression:
 
 FunctionExpression:
 	FUNCTION IDENTIFIER OPEN_PARENTHESIS Parameter CLOSE_PARENTHESIS {
-		Symbol* function = findName(functionsTable, $2);
-		if (function != NULL) {
-			printf("Error: Funcao %s ja declarada\n", $2);
-			has_error = 1;
-		}
-		char *buffer = (char*)malloc(sizeof(char));
+		if(!function_is_declared(functionsTable, $2)){
+      has_error = 1;
+    }
+		
+    char *buffer = (char*)malloc(sizeof(char));
 		sprintf(buffer, "def %s( %s ):", $2, $4);
 		printCode(buffer,second_parse);
 
@@ -216,11 +211,9 @@ FunctionExpression:
 
 	}
 	| FUNCTION IDENTIFIER OPEN_PARENTHESIS CLOSE_PARENTHESIS {
-		Symbol* function = findName(functionsTable, $2);
-		if (function != NULL) {
-			printf("Error: Funcao %s ja declarada\n", $2);
-			has_error = 1;
-		}
+		if(!function_is_declared(functionsTable, $2)){
+      has_error = 1;
+    }
 
 		char *buffer = (char*)malloc(sizeof(char));
 		sprintf(buffer, "def %s():", $2);
@@ -239,13 +232,13 @@ FunctionExpression:
 
 CallingFunctionExpression:
 	IDENTIFIER OPEN_PARENTHESIS CallingParameter CLOSE_PARENTHESIS {
-		Symbol* function = findName(functionsTable, $1);
-		if(function == NULL){
-			printf("Error: Funcao %s nao declarada\n", $1);
-			has_error = 1;
-		} else {
-			char *arguments = (char*) malloc(sizeof(char));
-			strcat(arguments, function->value);
+	  Symbol* function = findName(functionsTable, $2);
+	  if (function == NULL) {
+  		has_error = 1;				
+      printf("Error: Funcao %s nao declarada\n", $2);
+    } else {
+      char *arguments = (char*) malloc(sizeof(char));
+        strcat(arguments, function->value);
 			
 			if (strcmp(arguments, callingList) == 0) {
 				char *buffer = (char*) malloc(sizeof(char));
@@ -260,13 +253,13 @@ CallingFunctionExpression:
 		}
 	}
 	| IDENTIFIER OPEN_PARENTHESIS CLOSE_PARENTHESIS {
-		Symbol* function = findName(functionsTable, $1);
-		if(function == NULL){
-			printf("Error: Funcao %s nao declarada\n", $1);
-			has_error = 1;
-		} else {
-			char *arguments = (char*) malloc(sizeof(char));
-			strcat(arguments, function->value);
+	  Symbol* function = findName(functionsTable, $2);
+	  if (function == NULL) {
+  		has_error = 1;				
+      printf("Error: Funcao %s nao declarada\n", $2);
+    } else {
+      char *arguments = (char*) malloc(sizeof(char));
+        strcat(arguments, function->value);
 
 			if (strcmp(arguments, "") == 0) {
 				char *buffer = (char*) malloc(sizeof(char));
@@ -449,22 +442,37 @@ WhileExpression:
 	
 ForExpression:
 	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
-		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"for %s in range(%s , %s, %s):", $2, $4, $6, $8);
+		
+    char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"for %s in range(%s, %s, %s):", $2, $4, $6, $8);
 		printCode(buffer, second_parse);
 		scope++;
 		insertVariable(table, "function", "for", NULL, NULL, scope);
-		printComment("\t#O for usa uma variavel (pra receber os valores temporarios) \n", second_parse, allow_comments);
+		
+    Symbol* variable = findName(table, $2);
+    if(variable == NULL){
+      insertVariable(table, "int", $2, $4, NULL, scope);
+    }
+    
+    printComment("\t#O for usa uma variavel (pra receber os valores temporarios) \n", second_parse, allow_comments);
 		indent(scope, second_parse);
 		printComment("\t#E também chama a funcao range, que recebe um valor inicial, um valor final e um passo. \n", second_parse, allow_comments);
 	}
 	| FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier {
-		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"for %s in range(%s , %s):", $2, $4, $6);
+	  
+
+    char *buffer = (char*) malloc(sizeof(char));
+		sprintf(buffer,"for %s in range(%s, %s):", $2, $4, $6);
 		printCode(buffer, second_parse);
 		scope++;
 		insertVariable(table, "function", "for", NULL, NULL, scope);
-		printComment("\t#O terceiro parametro do range é opcional e igual a um por definicao . \n", second_parse, allow_comments);
+    
+    Symbol* variable = findName(table, $2);
+    if(variable == NULL){
+      insertVariable(table, "int", $2, $4, NULL, scope);
+    }
+		
+    printComment("\t#O terceiro parametro do range é opcional e igual a um por definicao . \n", second_parse, allow_comments);
 	}
 	| END_FOR {
 		deleteTable(table, scope);
@@ -476,12 +484,12 @@ ForExpression:
 
 NumberOrIdentifier:
 	IDENTIFIER {
-		if (is_variable_declared(table, $1) == 0 && is_variable_initialized(table, $1) == 0) {
+		if(is_variable_initialized(table, $1)) {
 				$$ = $1;
 		} else {
 			has_error = 1;
 		}
-	}
+  }
 	| NUMBER {
 		$$ = $1;
 	}
@@ -575,15 +583,11 @@ MathExpression:
 
 MathParam:
 	IDENTIFIER {
-		if(is_variable_declared(table, $1) == 0 && is_variable_initialized(table, $1) == 0) {
-			if (is_a_number(table, $1) == 0) {
-				$$ = $1;
-			} else {
-				has_error = 1;			
-			}
-		} else {
-			has_error = 1;
-		}
+    if (is_a_number(table, $1)) {
+      $$ = $1;
+    } else {
+      has_error = 1;			
+    }
 	}
 	| NUMBER {
 		$$ = $1;

@@ -1,13 +1,41 @@
 inicio
+  inteiro a
+  a <- 2
 
-	inteiro a
-	a <- 2
+  escreva a
 
-	se a<3 entao
-		escreva "teste"
-	fim_se
+  se a<3 entao
+    escreva "abcd"
+  fim_se
 
-	para a de 1 ate 3
-		escreva a
-	fim_para
+  para a de 1 ate 3
+    escreva "teste for variavel a"
+    escreva a
+  fim_para
+
+  para b de 1 ate 3
+    escreva "teste for outra variavel"
+    escreva b
+  fim_para
+
+
+  para a de 1 ate 3 passo 2
+    escreva "teste for variavel a com passo"
+    escreva a
+  fim_para
+
+  para b de 1 ate 3 passo 2
+    escreva "teste for outra variavel com passo"
+    escreva b
+  fim_para
+
+  a <- 0
+
+
+  enquanto a<4
+    escreva "teste while"
+    escreva a
+    a <- a + 1
+  fim_enquanto
+
 fim
