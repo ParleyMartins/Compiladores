@@ -8,7 +8,7 @@ letter [a-zA-Z]
 digit [0-9]
 number {digit}+
 symbol ["+"]
-string "\""[a-zA-Z0-9\?\+\!\@\#\$\%\^\&\*\(\)\{\}\[\] ]*"\""
+string "\""[a-zA-Z0-9\?\+\!\@\#\$\%\^\&\*\(\)\{\}\[\]\' ]*"\""
 identifier {letter}(_|{letter}|{digit})*
 
 %%
@@ -56,9 +56,7 @@ identifier {letter}(_|{letter}|{digit})*
 "fim_enquanto"		return (END_WHILE);
 "fim_funcao"		return (END_FUNCTION);
 
-"inteiro"		return (INT);
-"real"			return (FLOAT);
-"caractere"		return (CHAR);
+"numero"		return (NUMBER_TYPE);
 "texto"			return (STRING_TYPE);
 
 {identifier}	{
@@ -71,7 +69,7 @@ identifier {letter}(_|{letter}|{digit})*
 {number}	{ 
 			yylval = (char*) malloc( sizeof(char) ); 
 			strcpy(yylval, yytext);
-			return (NUMBER);
+			return (NUMBER_VALUE);
 		}	
 
 

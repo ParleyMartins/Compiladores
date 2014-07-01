@@ -52,13 +52,11 @@
 %token PRINT
 %token SCAN
 
-%token INT
-%token FLOAT
-%token CHAR
+%token NUMBER_TYPE
 %token STRING_TYPE
 
 %token IDENTIFIER
-%token NUMBER
+%token NUMBER_VALUE
 %token STRING_VALUE
 
 %token END_IF
@@ -75,7 +73,7 @@
 StartExpression:
 	START {
 		Symbol* main = createSymbol(NULL, "void",
-				"main", "", "int", scope);
+				"main", "", "num", scope);
 		table = createTable(main, debugOption);
 
 		printCode("#!/usr/bin/env python\n\n", second_parse);
@@ -334,8 +332,8 @@ Argument:
 			strcat(callingList, " ");
 		}
 	}
-	| NUMBER {
-		strcat(callingList, "int");
+	| NUMBER_VALUE {
+		strcat(callingList, "number");
 		strcat(callingList, " ");
 	}
 	| STRING_VALUE {
@@ -441,7 +439,7 @@ WhileExpression:
 	;
 	
 ForExpression:
-	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER {
+	FOR IDENTIFIER FROM NumberOrIdentifier TO NumberOrIdentifier STEP NUMBER_VALUE {
 		
     char *buffer = (char*) malloc(sizeof(char));
 		sprintf(buffer,"for %s in range(%s, %s, %s):", $2, $4, $6, $8);
@@ -451,7 +449,7 @@ ForExpression:
 		
     Symbol* variable = findName(table, $2);
     if(variable == NULL){
-      insertVariable(table, "int", $2, $4, NULL, scope);
+      insertVariable(table, "number", $2, $4, NULL, scope);
     }
     
     printComment("\t#O for usa uma variavel (pra receber os valores temporarios) \n", second_parse, allow_comments);
@@ -469,7 +467,7 @@ ForExpression:
     
     Symbol* variable = findName(table, $2);
     if(variable == NULL){
-      insertVariable(table, "int", $2, $4, NULL, scope);
+      insertVariable(table, "number", $2, $4, NULL, scope);
     }
 		
     printComment("\t#O terceiro parametro do range é opcional e igual a um por definicao . \n", second_parse, allow_comments);
@@ -490,7 +488,7 @@ NumberOrIdentifier:
 			has_error = 1;
 		}
   }
-	| NUMBER {
+	| NUMBER_VALUE {
 		$$ = $1;
 	}
 	;
@@ -506,7 +504,7 @@ AttribuitionExpression:
 	;
 
 AttribuitionValue:
-	NUMBER {
+	NUMBER_VALUE {
 		$$ = $1;
 	}
 	| STRING_VALUE {
@@ -532,13 +530,14 @@ DeclarationExpression:
 	| Type IDENTIFIER RECEIVES AttribuitionValue {
 		insertVariable(table, $1, $2, $4, NULL, scope);	
 		char *buffer = (char*) malloc(sizeof(char));
-		sprintf(buffer,"%s = %s", $2, $4);
+
+    sprintf(buffer,"%s = %s", $2, $4);
 		printCode(buffer, second_parse);
 
 		strcat(argumentList, $1);
 		strcat(argumentList, " ");
 
-		printComment("\t#Observe que a sua variavel nao possui o tipo declarado, como int ou float\n", second_parse, allow_comments);
+		printComment("\t#Observe que a sua variavel nao possui o tipo declarado, como numero ou texto\n", second_parse, allow_comments);
 		indent(scope, second_parse);
 		printComment("#Relaxe. O Python que reconhece o tipo da variavel automaticamente\n", second_parse, allow_comments);
 		indent(scope, second_parse);
@@ -547,16 +546,10 @@ DeclarationExpression:
 	;
 
 Type:
-	INT {
-		$$ = "int";
-	}
-	| FLOAT {
-		$$ = "float";
-	}
-	| CHAR {
-		$$ = "char";
-	}
-	| STRING_TYPE {
+	NUMBER_TYPE{
+    $$ = "number"
+  }
+  | STRING_TYPE {
 		$$ = "string";
 	}
 	;
@@ -589,7 +582,7 @@ MathParam:
       has_error = 1;			
     }
 	}
-	| NUMBER {
+	| NUMBER_VALUE {
 		$$ = $1;
 	}
 	;

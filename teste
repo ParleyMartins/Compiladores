@@ -1,0 +1,21 @@
+#!/bin/bash
+
+compilar(){ 
+
+  $EXEC <$INPUT >$OUTPUT
+
+  cat $OUTPUT
+  echo 
+  echo 
+}
+
+make 
+
+EXEC=./prog
+find . -name "*.teste" >testes
+TESTS=./testes
+OUTPUT=./testes.py
+
+for INPUT in $(cat $TESTS); do
+  compilar
+done 

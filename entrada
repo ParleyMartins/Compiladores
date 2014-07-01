@@ -1,5 +1,6 @@
 inicio
-  inteiro a
+  numero a
+  texto b <- "lkdalkdjka"
   a <- 2
 
   escreva a
@@ -11,13 +12,13 @@ inicio
   para a de 1 ate 3
     escreva "teste for variavel a"
     escreva a
+    leia b
   fim_para
 
   para b de 1 ate 3
     escreva "teste for outra variavel"
     escreva b
   fim_para
-
 
   para a de 1 ate 3 passo 2
     escreva "teste for variavel a com passo"
@@ -30,7 +31,6 @@ inicio
   fim_para
 
   a <- 0
-
 
   enquanto a<4
     escreva "teste while"
