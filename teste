@@ -4,6 +4,18 @@ compilar(){
 
   $EXEC <$INPUT >$OUTPUT
 
+  for line in $(cat $OUTPUT); do
+    break;
+  done
+
+  if [ $line = "Error:" ]; then
+    echo -e $RED $INPUT $COLOR_END 
+    FAIL=$(($FAIL+1))
+  else
+    echo -e $GREEN $INPUT $COLOR_END 
+    PASSED=$(($PASSED+1))
+  fi
+  
   cat $OUTPUT
   echo 
   echo 
@@ -12,10 +24,21 @@ compilar(){
 make 
 
 EXEC=./prog
-find . -name "*.teste" >testes
-TESTS=./testes
+touch nomes_testes
+find . -name "*.teste" >nomes_testes
+TESTS=./nomes_testes
 OUTPUT=./testes.py
+
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+COLOR_END="\033[0m"
+
+PASSED=0
+FAIL=0
 
 for INPUT in $(cat $TESTS); do
   compilar
-done 
+done
+
+echo -e $GREEN Passed: $PASSED $COLOR_END
+echo -e $RED Failed: $FAIL $COLOR_END
